@@ -1,0 +1,51 @@
+:root {
+  --primary-color: #8b4513;
+  --primary-dark: #6b3211;
+  --primary-light: #a0522d;
+  --text-color: #333333;
+  --light-text: #666666;
+  --border: #e2e2e2;
+  --star-color: #ffc107;
+  --bg-light: #f8f8f8;
+}
+
+.shop-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.shop-page main {
+  flex: 1;
+  padding-bottom: 4rem;
+}
+
+/* Container utilities */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+}

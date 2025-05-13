@@ -1,0 +1,432 @@
+/* Base Variables */
+:root {
+  --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  --card-shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.2);
+  --card-border: 1px solid rgba(0, 0, 0, 0.1);
+  --transition-standard: all 0.3s ease;
+  --border-radius: 10px;
+  --spacing-standard: 30px;
+}
+
+/* Testimonials Grid Layout */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-standard);
+  margin-top: 50px;
+  padding: 20px; /* Add padding for better spacing */
+  background-color: #f9f9f9; /* Optional: Add a background color */
+  border-radius: var(--border-radius); /* Optional: Add rounded corners */
+  max-height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
+  transition: max-height 0.8s ease-out, opacity 0.5s ease-out,
+    visibility 0s linear 0.5s;
+}
+
+.testimonials-grid.visible {
+  max-height: 2000px;
+  visibility: visible;
+  opacity: 1;
+  transition: max-height 0.8s ease-out, opacity 0.5s ease-out, visibility 0s;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Testimonial Card Styling */
+.testimonial-card {
+  background: white;
+  padding: var(--spacing-standard);
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  text-align: left;
+  position: relative;
+  border: var(--card-border);
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out,
+    box-shadow 0.3s ease;
+}
+
+.testimonial-card.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.testimonial-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* Animation Delays */
+.testimonial-card:nth-child(1) {
+  transition-delay: 0.1s;
+}
+.testimonial-card:nth-child(2) {
+  transition-delay: 0.3s;
+}
+.testimonial-card:nth-child(3) {
+  transition-delay: 0.5s;
+}
+
+.stars {
+  color: var(--star-color);
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.testimonial-text {
+  font-style: italic;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  position: relative;
+  padding-left: 20px;
+  color: var(--text-color);
+}
+
+.testimonial-text::before {
+  content: '"';
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  line-height: 1;
+  opacity: 0.3;
+}
+
+/* Stats Section */
+.stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: nowrap;
+}
+
+.stat-box {
+  background: var(--bg-color);
+  padding: 40px 30px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  width: 280px;
+  border: var(--card-border);
+  opacity: 0;
+  transform: translateY(30px);
+  transition: var(--transition-standard);
+}
+
+.stat-box.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stat-box:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* Stats Animation Delays */
+.stat-box:nth-child(1) {
+  transition-delay: 0.1s;
+}
+.stat-box:nth-child(2) {
+  transition-delay: 0.3s;
+}
+.stat-box:nth-child(3) {
+  transition-delay: 0.5s;
+}
+.stat-box:nth-child(4) {
+  transition-delay: 0.7s;
+}
+
+/* Stats Content */
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+  line-height: 1;
+  text-align: center;
+}
+
+.stat-text {
+  font-size: 1rem;
+  color: var(--light-text);
+  font-weight: 400;
+  text-align: center;
+}
+
+.client-info {
+  display: flex;
+  align-items: center;
+}
+
+.client-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  margin-right: 15px;
+}
+
+.client-name {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.client-email {
+  color: var(--light-text);
+  font-size: 0.9rem;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+  background-color: #f9f9f9;
+  padding: 80px 0;
+  position: relative;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.busniess-review {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 40px;
+  margin-top: 40px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.busniess-review:hover {
+  transform: translateY(-5px);
+}
+
+.business-info {
+  background-color: white;
+  border-radius: var(--border-radius);
+  padding: 25px;
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  transition: var(--transition-standard);
+  max-width: 300px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.business-info::after {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.business-info:hover::after {
+  opacity: 1;
+}
+
+.business-name {
+  font-size: 1.5rem;
+  color: #000000;
+  margin-bottom: 10px;
+  font-weight: 600;
+  font-family: 'Playfair Display', serif;
+}
+
+.reviews-count {
+  font-size: 1rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.star-rating {
+  color: #ffd700;
+}
+
+/* Reviews Side Panel */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--transition-standard);
+}
+
+.overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.reviews-panel {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 400px;
+  height: 100vh;
+  background-color: white;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: right 0.3s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--spacing-standard);
+}
+
+.reviews-panel.active {
+  right: 0;
+}
+
+.reviews-panel .panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.reviews-panel .panel-title {
+  font-size: 1.5rem;
+  color: #000000;
+  font-family: 'Playfair Display', serif;
+}
+
+.reviews-panel .close-panel {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.3s;
+}
+
+.reviews-panel .close-panel:hover {
+  color: #000;
+}
+
+.reviews-panel .review-card {
+  background-color: #fafafa;
+  border-radius: var(--border-radius);
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 15px;
+}
+
+.reviews-panel .reviewer-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--henna);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.reviews-panel .review-content {
+  flex: 1;
+}
+
+.reviews-panel .reviewer-name {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #333;
+  font-family: 'Playfair Display', serif;
+}
+
+.reviews-panel .review-stars {
+  color: #ffd700;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.reviews-panel .review-date {
+  font-size: 0.8rem;
+  color: #999;
+  margin-bottom: 8px;
+}
+
+.reviews-panel .review-text {
+  color: #555;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .busniess-review {
+    flex-direction: column;
+  }
+
+  .business-img {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .reviews-panel {
+    width: 100%;
+    right: -100%;
+  }
+
+  .stats {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .stat-box {
+    width: calc(50% - 20px);
+    min-width: 250px;
+  }
+
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-box {
+    width: 100%;
+  }
+
+  .review-card {
+    flex-direction: column;
+  }
+
+  .reviewer-avatar {
+    align-self: flex-start;
+  }
+}
