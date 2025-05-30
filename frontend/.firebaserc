@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "prod": "test-login-67ca5",
+    "default": "test-login-67ca5",
+    "login-67ca5.": "test-login-67ca5"
+  },
+  "targets": {},
+  "etags": {}
+}

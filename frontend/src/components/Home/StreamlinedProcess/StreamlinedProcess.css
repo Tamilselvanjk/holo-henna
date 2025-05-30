@@ -1,0 +1,185 @@
+/* Streamlined Process Section */
+.streamlined-process {
+  background-color: #f8f8f8;
+  padding: 80px 0;
+}
+
+.overview-container {
+  width: 100%;
+}
+
+/* Section Title Styles */
+.section-title {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.section-title h2 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 15px;
+  font-family: 'Playfair Display', serif;
+}
+
+.section-title p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Steps Layout */
+.overview-steps {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 20px;
+  margin: 110px auto 40px auto;
+}
+
+/* Step Card Styles */
+.step {
+  border-radius: 50%;
+  width: 350px;
+  height: 350px;
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transform: scale(0.9);
+  opacity: 0;
+  transition: all 0.5s ease;
+  position: relative;
+  overflow: hidden;
+  margin: -1px;
+  border-style: dashed;
+  border-width: 2px 0px 0px 0px;
+  border-color: #000000;
+}
+
+.step:nth-child(2),
+.step:nth-child(4) {
+  border-width: 0px 0px 2px 0px;
+}
+
+/* Step Hover Effects */
+.step:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Step Background Animation */
+.step::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(153, 151, 151, 0.1) 0%,
+    rgba(24, 20, 20, 0) 70%
+  );
+  transform: scale(0);
+  transition: transform 0.8s ease;
+  border-radius: 50%;
+}
+
+.step.animate {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.step:hover::before {
+  transform: scale(1);
+}
+
+/* Step Icon Styles */
+.step-icon {
+  background: linear-gradient(135deg, #876e71, #000000);
+  color: white;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+  font-size: 24px;
+  transition: all 0.3s ease;
+}
+
+.step:hover .step-icon {
+  transform: rotate(15deg) scale(1.1);
+  box-shadow: 0 5px 15px rgba(125, 49, 102, 0.3);
+}
+
+/* Step Content Styles */
+.step h3 {
+  font-size: 19px;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+
+.step:hover h3 {
+  color: var(--text-color);
+}
+
+.step p {
+  font-size: 15px;
+  padding: 0 10px;
+  color: #555;
+  transition: all 0.3s ease;
+}
+
+.step:hover p {
+  transform: translateY(-3px);
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .overview-steps {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .step {
+    width: 300px;
+    height: 300px;
+  }
+
+  .step-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 20px;
+  }
+
+  .step h3 {
+    font-size: 16px;
+  }
+
+  .step p {
+    font-size: 13px;
+  }
+
+  .section-title h2 {
+    font-size: 2rem;
+  }
+}
+

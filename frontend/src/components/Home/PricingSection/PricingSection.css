@@ -1,0 +1,251 @@
+/* Container Styles */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.pricing-contain {
+  padding: 80px 0 50px 0;
+}
+
+.price-head {
+  margin-top: 10px;
+  margin-bottom: 100px;
+}
+/* Section Title Styles */
+.section-title {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.section-title h2 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 15px;
+  font-family: 'Playfair Display', serif;
+}
+
+.section-title p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Pricing Table Layout */
+.pricing-table {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: calc(100vw - 40px);
+  margin: 0 auto;
+}
+.price-circle .price {
+  color: #eaeaea;
+  font-size: 2rem;
+}
+
+/* Add this new rule to target the popular plan's price */
+.popular .price-circle .price {
+  color: #000000;
+  font-size: 2rem;
+}
+/* Plan Card Styles */
+.plan {
+  background: white;
+  border-radius: 15px;
+  padding: 40px 30px;
+  text-align: center;
+  width: 100%;
+  max-width: 320px;
+  min-width: 280px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s ease;
+  border: 1px solid #eee;
+  position: relative;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out, all 0.4s ease;
+}
+
+.plan.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.plan:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Popular Plan Styles */
+.popular {
+  border: 2px solid #333;
+}
+
+.popular-tag {
+  position: absolute;
+  top: -12px;
+  right: 30px;
+  background: #333;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Plan Content Styles */
+.plan h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+/* Price Circle Styles */
+.price-circle {
+  width: 170px;
+  height: 170px;
+  padding: 5px;
+  border-radius: 50%;
+  background: #333;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 25px auto;
+  transition: transform 0.3s ease;
+}
+
+.plan:hover .price-circle {
+  transform: scale(1.05);
+}
+
+.price {
+  font-size: 2.2rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.price-circle span {
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+/* Features List Styles */
+.features {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.features li::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #333;
+  flex-shrink: 0;
+}
+
+/* Button Styles */
+.btn-outline {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 14px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid #333;
+  background-color: white;
+  color: #333;
+}
+
+.btn-outline:hover {
+  background-color: #333;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.popular .price-circle {
+  background: white;
+  color: #333;
+  border: 2px solid #333;
+}
+
+.popular .btn-outline {
+  background-color: #333;
+  color: white;
+}
+
+.popular .btn-outline:hover {
+  background-color: white;
+  color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .pricing-table {
+    padding: 0 20px;
+  }
+
+  .plan {
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-title h2 {
+    font-size: 2rem;
+  }
+
+  .plan {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .price-circle {
+    width: 150px;
+    height: 150px;
+  }
+
+  .price {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .plan {
+    padding: 30px 20px;
+  }
+
+  .features li {
+    font-size: 0.9rem;
+  }
+}

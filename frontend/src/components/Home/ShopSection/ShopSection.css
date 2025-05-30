@@ -1,0 +1,226 @@
+/* Shop Section Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Section Title Styles */
+.section-title {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.section-title h2 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 15px;
+  font-family: 'Playfair Display', serif;
+}
+
+.section-title p {
+  color: #666;
+  font-size: 1.1rem;
+}
+.shop-contain {
+  margin-top: 45px;
+}
+
+/* Shop Grid Layout */
+.shop-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+/* Package Card Styles */
+.package-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 1px solid #eee;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeIn 0.6s ease-out forwards;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.package-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Package Image Container */
+.package-image {
+  width: 100%;
+  height: 300px; /* Fixed height for all images */
+  position: relative;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.package-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* This will maintain aspect ratio */
+  transition: transform 0.5s ease;
+}
+
+.package-card:hover .package-image img {
+  transform: scale(1.05);
+  filter: grayscale(0%);
+}
+
+/* Package Overlay */
+.package-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.package-card:hover .package-overlay {
+  opacity: 1;
+}
+
+/* Package Content Styles */
+.package-content {
+  flex: 1; /* This will make all content sections equal height */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px;
+}
+
+.package-title {
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+  font-family: 'Playfair Display', serif;
+  color: #333;
+  letter-spacing: 0.5px;
+}
+
+.package-description {
+  color: #666;
+  margin-bottom: 18px;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.package-price {
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* Add to Cart Button */
+.add-to-cart {
+  width: 100%;
+  padding: 12px 20px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+}
+
+.add-to-cart:hover {
+  background-color: #555;
+  transform: translateY(-2px);
+}
+
+/* View in Shop Button */
+.view-in-shop {
+  color: white;
+  text-decoration: none;
+  padding: 12px 24px;
+  border: 2px solid white;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+/* Buy Now Button */
+.buy-now-btn {
+  background: #333;
+  color: white;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.buy-now-btn:hover {
+  background: #000;
+  transform: translateY(-2px);
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .shop-section {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .section-title h2 {
+    font-size: 2rem;
+  }
+
+  .package-image {
+    height: 250px; /* Slightly smaller on mobile */
+  }
+
+  .package-title {
+    font-size: 1.2rem;
+  }
+
+  .package-description {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .shop-section {
+    grid-template-columns: 1fr;
+  }
+
+  .package-content {
+    padding: 20px;
+  }
+}

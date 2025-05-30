@@ -1,0 +1,39 @@
+.hero-banner {
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url('/public/webimg/pexels-photo-2114229.jpeg') center/cover no-repeat;
+  color: white;
+  text-align: center;
+  padding: 4rem 1rem;
+  margin-bottom: 2rem;
+}
+
+.hero-banner h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.hero-banner p {
+  font-size: 1.125rem;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.shop-now-btn {
+  background-color: rgba(0, 0, 0, 0.804);
+  color: white;
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  display: inline-block;
+  transition: background-color 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.shop-now-btn:hover {
+  background-color: rgba(151, 151, 151, 0.744);
+  color: white;
+}
