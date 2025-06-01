@@ -5,37 +5,36 @@ const Product = require('../models/productModel')
 
 exports.getProducts = async (req, res) => {
   try {
-    const query = {}
-    if (req.query.category && req.query.category !== 'All Products') {
-      query.category = req.query.category
-    }
-
-    const products = await Product.find(query)
+    // Fetch all products without any initial filter
+    const products = await Product.find()
       .select('name price description ratings images category stock numOfReviews')
+      .sort({ createdAt: -1 })
       .lean()
 
-    const formattedProducts = products.map(product => ({
-      _id: product._id.toString(),
+    // Format products consistently
+    const formattedProducts = products.map((product) => ({
+      _id: product._id,
       name: product.name,
-      price: product.price,
-      description: product.description,
+      price: Number(product.price),
+      description: product.description || '',
       ratings: Number(product.ratings || 0),
       numOfReviews: Number(product.numOfReviews || 0),
       images: product.images || [],
       category: product.category,
-      stock: product.stock
+      stock: Number(product.stock || 0),
     }))
 
     res.setHeader('Content-Type', 'application/json')
     return res.status(200).json({
       success: true,
-      products: formattedProducts
+      products: formattedProducts,
     })
   } catch (error) {
-    console.error('Error:', error)
-    return res.status(500).json({
+    console.error('Product fetch error:', error)
+    res.status(500).json({
       success: false,
-      error: 'Server Error'
+      message: 'Error fetching products',
+      error: error.message,
     })
   }
 }

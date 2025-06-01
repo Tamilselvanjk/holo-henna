@@ -3,7 +3,7 @@ const dotenv = require('dotenv')
 const path = require('path')
 const cors = require('cors')
 const connectDatabase = require('./config/connectDatabase')
-const mongooseErrorHandler = require('./middleware/mongooseErrorHandler')
+
 
 // Import routes
 const products = require('./routes/product')
@@ -14,20 +14,23 @@ const app = express()
 dotenv.config({ path: path.join(__dirname, 'config', 'config.env') })
 
 connectDatabase()
-app.use(
-  cors({
-    origin: 'http://localhost:3000',
-    credentials: true,
-  })
-)
+
+// Use Object.assign instead of util._extend for configurations
+const corsOptions = {
+  origin: ['http://localhost:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions))
 app.use(express.json())
 
 // Routes
-app.use('/api/v1', products) // Products routes
-app.use('/api/v1/order', orders) // Order routes
+app.use('/api/v1/products', products)
+app.use('/api/v1/order', orders) // Keep this for backward compatibility
+app.use('/api/v1/orders', orders) // Add this for consistent API routing
 
-// Add mongoose error handler before generic error handler
-app.use(mongooseErrorHandler)
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -35,6 +38,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({
     success: false,
     error: 'Something went wrong!',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   })
 })
 

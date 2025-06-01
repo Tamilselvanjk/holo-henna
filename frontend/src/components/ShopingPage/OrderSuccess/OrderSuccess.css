@@ -1,91 +1,275 @@
 .order-success {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
-  background: #f8f9fa;
-  padding: 20px;
+  background: linear-gradient(120deg, #f6f9fc 0%, #ecf0f3 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  perspective: 1000px;
 }
 
 .success-content {
   background: white;
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  max-width: 500px;
+  padding: 3rem;
+  border-radius: 24px;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
+  max-width: 600px;
   width: 100%;
+  text-align: center;
+  transform-style: preserve-3d;
+  animation: cardEntrance 1s ease-out forwards;
 }
 
 .success-icon {
-  font-size: 4rem;
-  color: #4caf50;
-  margin-bottom: 20px;
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 2rem;
+  animation: iconFloat 3s ease-in-out infinite;
 }
 
 .success-icon i {
-  animation: scaleIn 0.5s ease;
+  font-size: 4rem;
+  color: #00c853;
+  background: linear-gradient(45deg, #00e676, #00c853);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: iconPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.thank-you {
-  font-size: 1.2rem;
-  color: #666;
-  margin-bottom: 20px;
+.success-content h2 {
+  margin: 2rem 0;
+  color: #439c32;
+  font-size: 2.5rem;
+  font-weight: 700;
+  opacity: 0;
+  animation: slideUp 0.6s ease forwards 0.3s;
+}
+.order-summary {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  margin: 2rem 0;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards 0.6s;
 }
 
-.order-details {
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  margin: 20px 0;
+.order-id, .total-section {
+  margin: 1rem 0;
+  font-size: 1.1rem;
+  color: #37474f;
 }
 
-.order-details p {
-  margin: 10px 0;
-  color: #666;
-}
-
-.order-details span {
-  color: #333;
-  font-weight: 500;
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 30px;
+  font-weight: 600;
+  background: #e8f5e9;
+  color: #2e7d32;
+  animation: statusPulse 2s infinite;
 }
 
 .confirmation {
   color: #666;
   line-height: 1.6;
-  margin-bottom: 30px;
+  margin: 2rem 0;
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out 0.9s forwards;
 }
 
 .action-buttons {
   display: flex;
-  gap: 20px;
+  gap: 1.5rem;
   justify-content: center;
+  margin-top: 3rem;
+  opacity: 0;
+  animation: slideUp 0.6s ease forwards 0.9s;
 }
 
-.continue-shopping,
-.view-order {
-  padding: 12px 24px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.3s ease;
+.action-buttons a {
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .continue-shopping {
-  background: var(--primary-color);
+  background: linear-gradient(45deg, #3949ab, #1a237e);
   color: white;
+  box-shadow: 0 4px 15px rgba(57, 73, 171, 0.35);
+}
+
+.continue-shopping:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(57, 73, 171, 0.45);
 }
 
 .view-order {
-  background: #f8f9fa;
-  color: var(--text-color);
+  background: #f5f5f5;
+  color: #37474f;
+  border: 2px solid #e0e0e0;
 }
 
-@keyframes scaleIn {
+.view-order:hover {
+  background: #eeeeee;
+  border-color: #bdbdbd;
+}
+
+.loading-spinner-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(120deg, #f6f9fc 0%, #ecf0f3 100%);
+}
+
+.loading-spinner {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 1.5rem;
+}
+
+.loading-spinner:before,
+.loading-spinner:after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+.loading-spinner:before {
+  width: 100%;
+  height: 100%;
+  background: var(--primary-color);
+  animation-delay: -0.5s;
+}
+
+.loading-spinner:after {
+  width: 80%;
+  height: 80%;
+  background: white;
+  top: 10%;
+  left: 10%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation-delay: 0s;
+}
+
+.loading-text {
+  color: #666;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  animation: fadeInOut 1.5s ease-in-out infinite;
+}
+
+.loading-progress {
+  width: 200px;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  margin-top: 1rem;
+  overflow: hidden;
+}
+
+.loading-progress-bar {
+  height: 100%;
+  background: var(--primary-color);
+  border-radius: 2px;
+  animation: progress 2s ease-in-out infinite;
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(40px) rotateX(-10deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes iconPop {
   from {
     transform: scale(0);
+    opacity: 0;
   }
   to {
     transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes statusPulse {
+  0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(46, 125, 50, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes progress {
+  0% { width: 0; }
+  50% { width: 100%; }
+  100% { width: 0; }
+}
+
+@media (max-width: 768px) {
+  .success-content {
+    padding: 2rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .success-content h2 {
+    font-size: 2rem;
   }
 }

@@ -41,23 +41,23 @@ const AddressDialog = ({ isOpen, onClose, onSave, currentAddress }) => {
 
   const validateForm = () => {
     const newErrors = {}
-    
+
     if (!formData.name?.trim()) {
       newErrors.name = 'Name is required'
     }
-    
+
     if (!formData.street?.trim()) {
       newErrors.street = 'Street address is required'
     }
-    
+
     if (!formData.city?.trim()) {
       newErrors.city = 'City is required'
     }
-    
+
     if (!formData.state?.trim()) {
       newErrors.state = 'State is required'
     }
-    
+
     if (!formData.pincode?.trim()) {
       newErrors.pincode = 'PIN code is required'
     } else if (!/^\d{6}$/.test(formData.pincode.trim())) {
@@ -82,8 +82,8 @@ const AddressDialog = ({ isOpen, onClose, onSave, currentAddress }) => {
         lines: [
           formData.street,
           formData.area,
-          `${formData.city}, ${formData.state} ${formData.pincode}`
-        ].filter(line => line?.trim()),
+          `${formData.city}, ${formData.state} ${formData.pincode}`,
+        ].filter((line) => line?.trim()),
         name: formData.name?.trim(),
         mobile: formData.mobile?.trim(),
       }
@@ -159,7 +159,9 @@ const AddressDialog = ({ isOpen, onClose, onSave, currentAddress }) => {
               placeholder="House/Flat No., Street, Building"
               className={errors.street ? 'error' : ''}
             />
-            {errors.street && <span className="error-text">{errors.street}</span>}
+            {errors.street && (
+              <span className="error-text">{errors.street}</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -197,7 +199,9 @@ const AddressDialog = ({ isOpen, onClose, onSave, currentAddress }) => {
                 placeholder="State"
                 className={errors.state ? 'error' : ''}
               />
-              {errors.state && <span className="error-text">{errors.state}</span>}
+              {errors.state && (
+                <span className="error-text">{errors.state}</span>
+              )}
             </div>
           </div>
 
@@ -213,7 +217,9 @@ const AddressDialog = ({ isOpen, onClose, onSave, currentAddress }) => {
                 maxLength="6"
                 className={errors.pincode ? 'error' : ''}
               />
-              {errors.pincode && <span className="error-text">{errors.pincode}</span>}
+              {errors.pincode && (
+                <span className="error-text">{errors.pincode}</span>
+              )}
             </div>
 
             <div className="form-group">
@@ -227,7 +233,9 @@ const AddressDialog = ({ isOpen, onClose, onSave, currentAddress }) => {
                 maxLength="10"
                 className={errors.mobile ? 'error' : ''}
               />
-              {errors.mobile && <span className="error-text">{errors.mobile}</span>}
+              {errors.mobile && (
+                <span className="error-text">{errors.mobile}</span>
+              )}
             </div>
           </div>
 
@@ -244,8 +252,12 @@ const AddressDialog = ({ isOpen, onClose, onSave, currentAddress }) => {
           </div>
 
           <div className="dialog-buttons">
-            <button type="button" className="cancel-btn" onClick={onClose}>Cancel</button>
-            <button type="submit" className="save-btn">Save Address</button>
+            <button type="button" className="cancel-btn" onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" className="save-btn">
+              Save Address
+            </button>
           </div>
         </form>
       </div>

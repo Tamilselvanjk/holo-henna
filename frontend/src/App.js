@@ -11,6 +11,8 @@ import Home from './pages/Home'
 import Gallery from './pages/Gallery'
 import Shop from './pages/Shop'
 import UserProfile from './components/UserProfile/UserProfile'
+import OrderSuccess from './components/ShopingPage/OrderSuccess/OrderSuccess';
+import OrdersPage from './components/ShopingPage/OrdersPage/OrdersPage';
 
 // Styles
 import 'react-toastify/dist/ReactToastify.css'
@@ -36,6 +38,8 @@ const App = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/gallery" element={<Gallery />} />
                 <Route path="/shop" element={<Shop />} />
+                <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+                <Route path="/orders" element={<OrdersPage />} />
 
                 {/* Protected Profile Route */}
                 <Route

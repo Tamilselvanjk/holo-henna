@@ -59,6 +59,21 @@ const Cart = ({ isOpen, onClose }) => {
     return imagePaths[category] || '/webimg/product1.jpg'
   }
 
+  const handleQuantityUpdate = (item, newQuantity) => {
+    if (newQuantity <= 0) {
+      updateQuantity(item._id, 0) // Remove item
+      return
+    }
+
+    // Check stock limit
+    if (newQuantity > item.stock) {
+      toast.warning(`Only ${item.stock} items available in stock`)
+      return
+    }
+
+    updateQuantity(item._id, newQuantity)
+  }
+
   const renderCartItems = () => (
     <div className="cart-items">
       {!cartItems?.length ? (
@@ -80,11 +95,14 @@ const Cart = ({ isOpen, onClose }) => {
               <p className="cart-item-price">
                 ${(item.price * item.quantity).toFixed(2)}
               </p>
+              <span className="stock-info">
+                {item.stock > 0 ? `${item.stock} in stock` : 'Out of stock'}
+              </span>
             </div>
             <div className="cart-item-quantity">
               <button
                 className="quantity-btn"
-                onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                onClick={() => handleQuantityUpdate(item, item.quantity - 1)}
                 disabled={item.quantity <= 1}
               >
                 -
@@ -92,7 +110,8 @@ const Cart = ({ isOpen, onClose }) => {
               <span>{item.quantity}</span>
               <button
                 className="quantity-btn"
-                onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                onClick={() => handleQuantityUpdate(item, item.quantity + 1)}
+                disabled={item.quantity >= item.stock}
               >
                 +
               </button>

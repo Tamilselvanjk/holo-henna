@@ -1,155 +1,92 @@
 const mongoose = require('mongoose')
-const Order = require('../models/orderModel')
+const orderModel = require('../models/orderModel')
 const User = require('../models/userModel')
 const Product = require('../models/productModel')
 
 exports.createOrder = async (req, res) => {
   try {
-    // Accept both cartItems and items for compatibility
-    let { userId, cartItems, items, shippingAddress, paymentStatus } = req.body
-    cartItems =
-      Array.isArray(cartItems) && cartItems.length > 0
-        ? cartItems
-        : Array.isArray(items) && items.length > 0
-        ? items
-        : null
+    const { cartItems, shippingAddress, totalAmount } = req.body
 
-    // Validate cart items first
-    if (!cartItems) {
+    if (!cartItems?.length || !shippingAddress) {
       return res.status(400).json({
         success: false,
-        message: 'Cart items are required',
+        message: 'Missing required order information',
       })
     }
 
-    // Handle user validation
-    let user
-    if (userId === 'temp-user-id') {
-      // Create guest user
-      try {
-        user = await User.create({
-          name: shippingAddress.name,
-          email: `guest_${Date.now()}_${Math.random()
-            .toString(36)
-            .substr(2, 9)}@example.com`,
-          mobile: shippingAddress.mobile,
-          isGuest: true,
-        })
-        userId = user._id
-        console.log('Created guest user with ID:', userId.toString())
-      } catch (userError) {
-        console.error('Guest user creation error:', userError)
-        return res.status(400).json({
-          success: false,
-          message: 'Failed to create guest user',
-        })
-      }
+    // Create guest user if needed
+    let userId
+    if (req.body.userId) {
+      userId = req.body.userId
     } else {
-      // Validate existing user
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid user ID format',
-        })
-      }
-
-      user = await User.findById(userId)
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: `User not found with id: ${userId}`,
-        })
-      }
-    }
-
-    // Validate and check products exist
-    const validatedItems = []
-    for (const item of cartItems) {
-      if (!item.product || !item.product._id || !item.qty) {
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid cart item format',
-        })
-      }
-
-      if (!mongoose.Types.ObjectId.isValid(item.product._id)) {
-        return res.status(400).json({
-          success: false,
-          message: `Invalid product ID format: ${item.product._id}`,
-        })
-      }
-
-      const product = await Product.findById(item.product._id)
-      if (!product) {
-        return res.status(404).json({
-          success: false,
-          message: `Product not found with id: ${item.product._id}`,
-        })
-      }
-
-      validatedItems.push({
-        productId: product._id,
-        quantity: item.qty,
-        price: product.price, // Use price from database
+      const guestUser = await User.create({
+        name: shippingAddress.name,
+        email: `guest_${Date.now()}@temp.com`,
+        mobile: shippingAddress.mobile,
+        isGuest: true,
       })
+      userId = guestUser._id
     }
 
-    // Create order with validated items
-    const orderData = {
-      userId,
-      orderItems: validatedItems,
-      shippingAddress,
-      totalAmount: validatedItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-      ),
-      status: 'processing',
-      paymentStatus: paymentStatus || 'pending',
-    }
-
-    const order = await Order.create(orderData)
-
-    // Update product stock
-    await Promise.all(
-      orderData.orderItems.map(async (item) => {
-        await Product.findByIdAndUpdate(
-          item.productId,
-          { $inc: { stock: -item.quantity } },
-          { new: true }
-        )
+    // Format order items
+    const orderItems = await Promise.all(
+      cartItems.map(async (item) => {
+        const product = await Product.findById(item.product._id)
+        if (!product) {
+          throw new Error(`Product not found: ${item.product._id}`)
+        }
+        return {
+          productId: product._id,
+          quantity: item.quantity,
+          price: product.price,
+        }
       })
     )
 
-    // Return success with order details
+    // Create order
+    const order = await orderModel.create({
+      userId,
+      orderItems,
+      shippingAddress,
+      totalAmount,
+      status: 'processing',
+      paymentStatus: 'pending',
+    })
+
+    // Populate product details for response
+    const populatedOrder = await orderModel
+      .findById(order._id)
+      .populate({
+        path: 'orderItems.productId',
+        select: 'name price images',
+      })
+      .lean()
+
     res.status(201).json({
       success: true,
-      order: {
-        _id: order._id,
-        userId: order.userId,
-        orderItems: order.orderItems,
-        shippingAddress: order.shippingAddress,
-        totalAmount: order.totalAmount,
-        status: order.status,
-        paymentStatus: order.paymentStatus,
-        createdAt: order.createdAt,
-        updatedAt: order.updatedAt,
-      },
       message: 'Order created successfully',
+      order: populatedOrder,
     })
   } catch (error) {
     console.error('Order creation error:', error)
-    res.status(400).json({
+    res.status(500).json({
       success: false,
       message: error.message || 'Failed to create order',
-      error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
     })
   }
 }
 
 // Get order by ID - /api/v1/order/:id
-exports.getOrder = async (req, res, next) => {
+exports.getOrder = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate('cartItems.product')
+    const order = await orderModel
+      .findById(req.params.id)
+      .populate({
+        path: 'orderItems.productId',
+        model: 'Product',
+        select: 'name price images',
+      })
+      .lean()
 
     if (!order) {
       return res.status(404).json({
@@ -158,14 +95,61 @@ exports.getOrder = async (req, res, next) => {
       })
     }
 
+    // Format order data
+    const formattedOrder = {
+      ...order,
+      orderItems: order.orderItems.map((item) => ({
+        ...item,
+        product: item.productId, // Include product details
+        productId: undefined, // Remove duplicate info
+      })),
+    }
+
     res.status(200).json({
       success: true,
-      order,
+      order: formattedOrder,
     })
   } catch (error) {
+    console.error('Error fetching order:', error)
     res.status(500).json({
       success: false,
-      message: 'Error fetching order',
+      message: 'Error fetching order details',
+      error: error.message,
+    })
+  }
+}
+
+// Get all orders - /api/v1/orders
+exports.getAllOrders = async (req, res) => {
+  try {
+    const orders = await orderModel
+      .find()
+      .populate({
+        path: 'orderItems.productId',
+        model: 'Product',
+        select: 'name price images',
+      })
+      .sort({ createdAt: -1 })
+      .lean()
+
+    const formattedOrders = orders.map((order) => ({
+      ...order,
+      orderItems: order.orderItems.map((item) => ({
+        ...item,
+        product: item.productId,
+        productId: undefined,
+      })),
+    }))
+
+    res.status(200).json({
+      success: true,
+      orders: formattedOrders,
+    })
+  } catch (error) {
+    console.error('Error fetching orders:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching orders',
       error: error.message,
     })
   }

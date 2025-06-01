@@ -49,42 +49,42 @@ const DeliveryForm = ({
     }
   }, [addresses])
 
+  const formatShippingAddress = (address) => {
+    // Split the last line which contains city, state and pincode
+    const addressLines = address.lines.filter((line) => line) // Remove empty lines
+    const lastLine = addressLines[addressLines.length - 1] || ''
+    const matches = lastLine.match(/([^,]+),\s*([^,]+)\s+(\d{6})/)
+
+    return {
+      name: address.name,
+      mobile: address.mobile,
+      street: addressLines[0] || '',
+      area: addressLines[1] || '',
+      city: matches?.[1] || addressLines[2] || '',
+      state: matches?.[2]?.trim() || '',
+      pincode: matches?.[3] || '',
+      type: address.type,
+      addressLines: addressLines,
+    }
+  }
+
   const handleConfirm = () => {
     if (!selectedAddressId) {
       setError('Please select a delivery address')
       return
     }
 
-    const selectedAddress = addresses.find(
-      (addr) => addr.id === selectedAddressId
-    )
+    const selectedAddress = addresses.find((addr) => addr.id === selectedAddressId)
     if (!selectedAddress) {
       setError('Selected address not found')
       return
     }
 
-    // Ensure all required fields are present
-    const shippingAddress = {
-      name: selectedAddress.name,
-      mobile: selectedAddress.mobile,
-      street: selectedAddress.lines[0],
-      city: selectedAddress.lines[2],
-      state:
-        selectedAddress.lines[4]?.split(',')[1]?.trim() ||
-        selectedAddress.lines[3],
-      pincode: selectedAddress.lines[4]?.match(/\d+/)?.[0] || '',
-      addressLines: selectedAddress.lines,
-    }
+    const shippingAddress = formatShippingAddress(selectedAddress)
 
-    // Validate required fields
-    if (
-      !shippingAddress.street ||
-      !shippingAddress.city ||
-      !shippingAddress.state ||
-      !shippingAddress.pincode
-    ) {
-      setError('Please provide complete address details')
-      return
+    // Validate complete address
+    if (!validateAddress(shippingAddress)) {
+      return // Error is set in validateAddress
     }
 
     try {
@@ -98,9 +98,37 @@ const DeliveryForm = ({
         })),
       })
     } catch (error) {
-      console.error('Error processing delivery details:', error)
       setError('Failed to process delivery information')
+      console.error('Error:', error)
     }
+  }
+
+  const validateAddress = (address) => {
+    // Basic validation
+    if (
+      !address.name ||
+      !address.mobile ||
+      !address.street ||
+      !address.city ||
+      !address.state ||
+      !address.pincode
+    ) {
+      setError('Please provide all address details')
+      return false
+    }
+
+    // Format validation
+    if (!/^\d{10}$/.test(address.mobile)) {
+      setError('Invalid mobile number format')
+      return false
+    }
+
+    if (!/^\d{6}$/.test(address.pincode)) {
+      setError('Invalid pincode format')
+      return false
+    }
+
+    return true
   }
 
   const handleAddressSelect = (addressId) => {

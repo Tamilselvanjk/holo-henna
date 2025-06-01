@@ -26,16 +26,10 @@ const PaymentService = {
         body: JSON.stringify(orderData),
       })
 
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || 'Failed to create order')
-      }
-
-      const data = await response.json()
-      console.log('Order created successfully:', data)
-      return data
+      if (!response.ok) throw new Error('Order creation failed')
+      return response.json()
     } catch (error) {
-      console.error('Order creation error:', error)
+      console.error('Create order error:', error)
       throw error
     }
   },

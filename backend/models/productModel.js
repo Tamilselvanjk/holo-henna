@@ -26,13 +26,13 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: [
+        'All Products',
+        'Bridal Henna',
         'Traditional',
-        'Bridal',
-        'Modern',
         'Arabic',
+        'Modern',
         'Floral',
         'Custom Designs',
-        'Powder',
       ],
     },
     stock: {

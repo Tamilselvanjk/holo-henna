@@ -1,39 +1,28 @@
 import React, { useState } from 'react'
+import { categories } from '../../../constants/categories'
 import './Categories.css'
-
-const categories = [
-  'All Products',
-  'Bridal Henna',
-  'Traditional',
-  'Arabic',
-  'Modern',
-  'Floral',
-  'Custom Designs',
-]
 
 const Categories = ({ onCategoryChange }) => {
   const [activeCategory, setActiveCategory] = useState('All Products')
 
   const handleCategoryClick = (category) => {
-    setActiveCategory(category)
-    if (onCategoryChange) {
-      onCategoryChange(category)
-    }
+    setActiveCategory(category.name)
+    onCategoryChange?.(category.value) // Pass null for "All Products"
   }
 
   return (
     <div className="categories-section">
       <h2>Categories</h2>
       <div className="categories-list">
-        {categories.map((category) => (
+        {categories.map((cat) => (
           <button
-            key={category}
+            key={cat.id}
             className={`category-btn ${
-              activeCategory === category ? 'active' : ''
+              activeCategory === cat.name ? 'active' : ''
             }`}
-            onClick={() => handleCategoryClick(category)}
+            onClick={() => handleCategoryClick(cat)}
           >
-            {category}
+            {cat.name}
           </button>
         ))}
       </div>

@@ -101,62 +101,48 @@ const PaymentForm = ({
     const processingToast = toast.loading('Processing payment...')
 
     try {
-      // Validate required data
-      if (!cartItems?.length) {
-        throw new Error('Your cart is empty')
-      }
-
-      if (!shippingAddress?.name) {
-        throw new Error('Delivery address is required')
-      }
-
       // Validate payment data
       validatePayment(formData)
 
-      const paymentResult = await PaymentService.processPayment({
-        amount: total,
-        paymentMethod,
-        paymentDetails: formData,
-      })
-
+      // Create the order
       const orderData = {
-        items: cartItems.map((item) => ({
-          productId: item._id,
+        cartItems: cartItems.map((item) => ({
+          product: { _id: item._id },
           quantity: item.quantity,
-          price: item.price,
         })),
         shippingAddress,
-        userId: localStorage.getItem('userId') || 'temp-user-id',
-        paymentInfo: {
-          id: paymentResult.transactionId,
-          method: paymentMethod,
-          status: 'SUCCESS',
-        },
         totalAmount: total,
       }
 
-      const orderResponse = await PaymentService.createOrder(orderData)
-
-      toast.update(processingToast, {
-        render: 'Payment successful! Order placed.',
-        type: 'success',
-        isLoading: false,
-        autoClose: 3000,
+      const response = await fetch('/api/v1/order/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
       })
 
-      // Navigate to success page with order details
-      if (typeof onComplete === 'function') {
-        onComplete({
-          orderId: orderResponse.order._id,
-          orderDetails: orderResponse.order,
-          paymentId: paymentResult.transactionId,
-          status: 'SUCCESS',
-        })
+      const result = await response.json()
+
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to create order')
+      }
+
+      toast.update(processingToast, {
+        render: 'Payment successful!',
+        type: 'success',
+        isLoading: false,
+        autoClose: 2000,
+      })
+
+      // Navigate to success page
+      if (result.order?._id) {
+        window.location.href = `/order-success/${result.order._id}`
       }
     } catch (error) {
       console.error('Payment error:', error)
       toast.update(processingToast, {
-        render: error.message || 'Payment failed. Please try again.',
+        render: error.message || 'Payment failed',
         type: 'error',
         isLoading: false,
         autoClose: 5000,

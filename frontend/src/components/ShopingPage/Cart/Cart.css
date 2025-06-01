@@ -113,6 +113,17 @@
   color: var(--primary-color);
 }
 
+.quantity-btn:disabled {
+  border-color: #ccc;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.quantity-btn:disabled:hover {
+  border-color: #ccc;
+  color: #999;
+}
+
 .remove-item {
   background: none;
   border: none;
@@ -158,6 +169,13 @@
 .checkout-btn:disabled {
   background: #ccc;
   cursor: not-allowed;
+}
+
+.stock-info {
+  font-size: 0.8rem;
+  color: #666;
+  display: block;
+  margin-top: 4px;
 }
 
 @media (max-width: 480px) {

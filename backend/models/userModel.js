@@ -1,23 +1,30 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  name: String,
-  email: String,
+  name: {
+    type: String,
+    required: [true, 'Name is required']
+  },
+  email: {
+    type: String,
+    required: [true, 'Email is required']
+  },
   mobile: {
     type: String,
-    sparse: true // Allows multiple null/undefined values
-    // Do NOT set unique: true here!
+    default: null, // Allow null values
+    sparse: true // Important: allows multiple null values
   },
   isGuest: {
     type: Boolean,
     default: false
   }
 }, {
-  timestamps: true,
-  strict: false
+  timestamps: true
 });
 
-// Remove all indexes to prevent duplicate key errors
-userSchema.set('autoIndex', false);
+// Important: Remove all indexes to prevent duplicate key errors
+if (process.env.NODE_ENV !== 'production') {
+  userSchema.set('autoIndex', false);
+}
 
 module.exports = mongoose.model('User', userSchema);

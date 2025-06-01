@@ -51,25 +51,7 @@ const orderSchema = new mongoose.Schema(
   }
 )
 
-// Add pre-save middleware to handle guest users
-orderSchema.pre('save', async function (next) {
-  if (!this.userId || this.userId === 'temp-user-id') {
-    const User = mongoose.model('User')
-    try {
-      const guestUser = await User.create({
-        name: this.shippingAddress.name,
-        email: `guest_${Date.now()}@example.com`,
-        isGuest: true,
-      })
-      this.userId = guestUser._id
-    } catch (error) {
-      next(error)
-    }
-  }
-  next()
-})
 
-// Add index for faster queries
-orderSchema.index({ userId: 1, createdAt: -1 })
 
-module.exports = mongoose.model('Order', orderSchema)
+const orderModel = mongoose.model('Order', orderSchema)
+module.exports = orderModel

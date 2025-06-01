@@ -72,7 +72,7 @@ const FeaturedProducts = () => {
 
         <div className="product-grid">
           {products.map((product, index) => (
-            <div key={product.id} className="product-card">
+            <div key={product.id} className="Ft-product-card">
               <div className="product-image">
                 <img src={product.image} alt={product.alt} loading="lazy" />
               </div>

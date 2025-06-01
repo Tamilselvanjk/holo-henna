@@ -1,27 +1,23 @@
 const BASE_URL = '/api/v1'
 
-export const ProductService = {
-  getAllProducts: async (category = 'All Products') => {
+class ProductService {
+  static async getAllProducts(category = null) {
     try {
-      const response = await fetch(`${BASE_URL}/products`)
+      const url = new URL('http://localhost:5000/api/v1/products')
+      if (category) {
+        url.searchParams.append('category', category)
+      }
 
+      const response = await fetch(url)
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        throw new Error('Failed to fetch products')
       }
-
-      const data = await response.json()
-
-      return {
-        success: true,
-        products: Array.isArray(data.products) ? data.products : [],
-      }
+      return await response.json()
     } catch (error) {
-      console.error('Error fetching products:', error)
-      return {
-        success: false,
-        products: [],
-        error: error.message,
-      }
+      console.error('Product service error:', error)
+      return { success: false, error: error.message }
     }
-  },
+  }
 }
+
+export { ProductService }

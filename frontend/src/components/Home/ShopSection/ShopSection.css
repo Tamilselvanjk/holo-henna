@@ -43,7 +43,7 @@
   transition: all 0.3s ease;
   border: 1px solid #eee;
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(3px);
   animation: fadeIn 0.6s ease-out forwards;
   height: 100%;
   display: flex;
