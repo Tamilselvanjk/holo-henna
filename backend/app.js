@@ -21,6 +21,10 @@ app.use(express.json())
 
 mongoose.connect('mongodb+srv://tamil:tamiljk@cluster0.cjirtjh.mongodb.net/');
 
+app.get("/", (req, res) => {
+    res.json("Hello");
+})
+
 dotenv.config({ path: path.join(__dirname, 'config', 'config.env') })
 
 connectDatabase()
