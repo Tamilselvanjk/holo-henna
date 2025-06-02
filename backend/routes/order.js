@@ -1,18 +1,15 @@
-const express = require('express')
-const router = express.Router()
-const {
-  createOrder,
-  getOrder,
-  getAllOrders,
-} = require('../controllers/orderController')
+const express = require('express');
+const router = express.Router();
+const { createOrder, getOrder, getAllOrders } = require('../controllers/orderController');
 
-// POST /api/v1/order/create - Create new order
-router.post('/create', createOrder)
+// Get all orders
+router.get('/orders', getAllOrders);
+router.get('/order/:id', getOrder);
+router.post('/orders/create', createOrder);
 
-// GET /api/v1/order/:id - Get single order
-router.get('/:id', getOrder)
+// Alternative paths
+router.get('/', getAllOrders);
+router.get('/:id', getOrder);
+router.post('/create', createOrder);
 
-// GET /api/v1/orders - Get all orders
-router.get('/', getAllOrders)
-
-module.exports = router
+module.exports = router;

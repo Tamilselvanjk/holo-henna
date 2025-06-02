@@ -5,67 +5,71 @@ const Product = require('../models/productModel')
 
 exports.createOrder = async (req, res) => {
   try {
-    const { orderItems, ...orderData } = req.body
+    const { orderItems, shippingAddress, totalAmount, paymentMethod } = req.body
 
-    // Validate if orderItems exists and is not empty
-    if (!orderItems || orderItems.length === 0) {
+    if (!Array.isArray(orderItems) || orderItems.length === 0) {
       return res.status(400).json({
         success: false,
         message: 'Order items are required',
       })
     }
 
-    // First verify all products exist before creating the order
+    // Validate products and check stock
     const productIds = orderItems.map((item) => item.product)
     const products = await Product.find({ _id: { $in: productIds } })
 
-    // Check if all products were found
-    const foundProductIds = products.map((p) => p._id.toString())
-    const missingProducts = productIds.filter(
-      (id) => !foundProductIds.includes(id)
-    )
-
-    if (missingProducts.length > 0) {
-      return res.status(404).json({
-        success: false,
-        message: `Products not found: ${missingProducts.join(', ')}`,
-      })
-    }
-
-    // Calculate total prices
-    const orderItemsWithDetails = orderItems.map((item) => {
+    // Verify all products exist and have sufficient stock
+    for (const item of orderItems) {
       const product = products.find(
         (p) => p._id.toString() === item.product
       )
-      return {
-        quantity: item.quantity,
-        product: item.product,
-        price: product.price,
+      if (!product) {
+        return res.status(400).json({
+          success: false,
+          message: `Product ${item.product} not found`,
+        })
       }
-    })
+      if (product.stock < item.quantity) {
+        return res.status(400).json({
+          success: false,
+          message: `Insufficient stock for ${product.name}`,
+        })
+      }
+    }
 
-    const totalPrices = orderItemsWithDetails.reduce((total, item) => {
-      return total + item.price * item.quantity
-    }, 0)
+    // Update product stock
+    const bulkOps = orderItems.map((item) => ({
+      updateOne: {
+        filter: { _id: item.product },
+        update: { $inc: { stock: -item.quantity } },
+      },
+    }))
 
+    await Product.bulkWrite(bulkOps)
+
+    // Create order
     const order = new orderModel({
-      orderItems: orderItemsWithDetails,
-      ...orderData,
-      totalAmount: totalPrices,
+      orderItems,
+      shippingAddress,
+      totalAmount,
+      paymentMethod,
+      status: 'processing',
     })
 
-    const createdOrder = await order.save()
+    const savedOrder = await order.save()
+    const populatedOrder = await orderModel
+      .findById(savedOrder._id)
+      .populate('orderItems.product', 'name price images')
 
     res.status(201).json({
       success: true,
-      data: createdOrder,
+      data: populatedOrder,
     })
   } catch (error) {
     console.error('Order creation error:', error)
     res.status(500).json({
       success: false,
-      message: 'Error creating order',
-      error: error.message,
+      message: error.message,
     })
   }
 }
@@ -76,8 +80,7 @@ exports.getOrder = async (req, res) => {
     const order = await orderModel
       .findById(req.params.id)
       .populate({
-        path: 'orderItems.productId',
-        model: 'Product',
+        path: 'orderItems.product',
         select: 'name price images',
       })
       .lean()
@@ -89,19 +92,9 @@ exports.getOrder = async (req, res) => {
       })
     }
 
-    // Format order data
-    const formattedOrder = {
-      ...order,
-      orderItems: order.orderItems.map((item) => ({
-        ...item,
-        product: item.productId, // Include product details
-        productId: undefined, // Remove duplicate info
-      })),
-    }
-
     res.status(200).json({
       success: true,
-      order: formattedOrder,
+      data: order,
     })
   } catch (error) {
     console.error('Error fetching order:', error)
@@ -119,25 +112,25 @@ exports.getAllOrders = async (req, res) => {
     const orders = await orderModel
       .find()
       .populate({
-        path: 'orderItems.productId',
+        path: 'orderItems.product',
         model: 'Product',
         select: 'name price images',
       })
       .sort({ createdAt: -1 })
       .lean()
 
-    const formattedOrders = orders.map((order) => ({
+    // Add safety checks for product data
+    const safeOrders = orders.map((order) => ({
       ...order,
       orderItems: order.orderItems.map((item) => ({
         ...item,
-        product: item.productId,
-        productId: undefined,
+        product: item.product || { name: 'Product Unavailable', price: 0 },
       })),
     }))
 
     res.status(200).json({
       success: true,
-      orders: formattedOrders,
+      orders: safeOrders,
     })
   } catch (error) {
     console.error('Error fetching orders:', error)

@@ -18,39 +18,45 @@ mongoose
     process.exit(1)
   })
 
-// CORS
-app.use(
-  cors({
-    origin: ['http://localhost:3000', 'https://holohenna-host.vercel.app'],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-)
+// CORS configuration
+const corsOptions = {
+  origin: ['http://localhost:3000', 'https://holohenna-host.vercel.app'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}
+
+app.use(cors(corsOptions))
 
 app.use(express.json())
 
-// Routes
-const products = require('./routes/product')
-const orders = require('./routes/order')
-app.use('/api/v1/products', products)
-app.use('/api/v1/order', orders)
-app.use('/api/v1/orders', orders)
+// Debug middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`)
+  next()
+})
+
+// Mount routes
+app.use('/api/v1/products', require('../routes/product'))
+app.use('/api/v1/orders', require('../routes/order'))
 
 // Error handling
 app.use((err, req, res, next) => {
-  console.error(err.stack)
+  console.error('API Error:', err)
   res.status(500).json({
     success: false,
-    error: 'Something went wrong!',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    message: 'Internal Server Error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined,
   })
 })
 
+// 404 handler - must be last
 app.use((req, res) => {
+  console.log('404 Not Found:', req.method, req.path)
   res.status(404).json({
     success: false,
     error: 'Route not found',
+    path: req.path,
   })
 })
 

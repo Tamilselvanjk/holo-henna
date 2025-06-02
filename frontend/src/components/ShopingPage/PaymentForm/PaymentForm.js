@@ -101,20 +101,21 @@ const PaymentForm = ({
     const processingToast = toast.loading('Processing payment...')
 
     try {
-      // Validate payment data
       validatePayment(formData)
 
-      // Create the order
       const orderData = {
-        cartItems: cartItems.map((item) => ({
-          product: { _id: item._id },
-          quantity: item.quantity,
+        orderItems: cartItems.map((item) => ({
+          product: item._id, // Use product instead of productId
+          quantity: Number(item.quantity),
+          price: Number(item.price),
         })),
         shippingAddress,
-        totalAmount: total,
+        totalAmount: Number(total),
+        paymentMethod,
+        paymentDetails: formData,
       }
 
-      const response = await fetch('/api/v1/order/create', {
+      const response = await fetch('/api/v1/orders/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -129,15 +130,16 @@ const PaymentForm = ({
       }
 
       toast.update(processingToast, {
-        render: 'Payment successful!',
+        render: 'Order placed successfully!',
         type: 'success',
         isLoading: false,
         autoClose: 2000,
       })
 
-      // Navigate to success page
-      if (result.order?._id) {
-        window.location.href = `/order-success/${result.order._id}`
+      // Navigate to success page with correct order ID
+      const orderId = result.data?._id
+      if (orderId) {
+        window.location.href = `/order-success/${orderId}`
       }
     } catch (error) {
       console.error('Payment error:', error)

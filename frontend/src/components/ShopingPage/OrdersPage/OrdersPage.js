@@ -11,11 +11,22 @@ const OrdersPage = () => {
 
   const getOrders = async () => {
     try {
-      const response = await fetch('/api/v1/orders')
+      setLoading(true)
+      const response = await fetch('/api/v1/orders', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
       const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch orders')
+      }
+
       if (data.success) {
-        // Sort orders by date, newest first
-        const sortedOrders = data.orders.sort(
+        const sortedOrders = (data.orders || []).sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         )
         setOrders(sortedOrders)
@@ -71,6 +82,24 @@ const OrdersPage = () => {
     </div>
   )
 
+  const renderOrderItems = (items) => (
+    <div className="items-list">
+      {items.map((item, idx) => (
+        <div key={idx} className="order-item">
+          <div className="item-info">
+            <span className="item-name">
+              {item.product?.name || 'Product Unavailable'}
+            </span>
+            <span className="item-quantity">×{item.quantity || 0}</span>
+          </div>
+          <span className="item-price">
+            ${((item.price || 0) * (item.quantity || 0)).toFixed(2)}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+
   if (loading) {
     return (
       <div className="orders-loading">
@@ -101,19 +130,7 @@ const OrdersPage = () => {
             <div className="order-main-content">
               <div className="order-items-section">
                 <h4>Items Ordered</h4>
-                <div className="items-list">
-                  {order.orderItems.map((item, idx) => (
-                    <div key={idx} className="order-item">
-                      <div className="item-info">
-                        <span className="item-name">{item.product.name}</span>
-                        <span className="item-quantity">×{item.quantity}</span>
-                      </div>
-                      <span className="item-price">
-                        ${(item.price * item.quantity).toFixed(2)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                {renderOrderItems(order.orderItems || [])}
               </div>
 
               {renderShippingInfo(order.shippingAddress)}

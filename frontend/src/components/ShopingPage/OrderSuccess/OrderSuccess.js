@@ -11,14 +11,14 @@ const OrderSuccess = () => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await fetch(`/api/v1/order/${orderId}`)
+        const response = await fetch(`/api/v1/orders/${orderId}`)
         const data = await response.json()
 
         if (!data.success) {
           throw new Error(data.message || 'Failed to fetch order')
         }
 
-        setOrderDetails(data.order)
+        setOrderDetails(data.data || data.order)
       } catch (error) {
         console.error('Error:', error)
         // Redirect to home if order not found

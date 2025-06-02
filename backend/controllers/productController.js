@@ -5,6 +5,7 @@ const Product = require('../models/productModel')
 
 exports.getProducts = async (req, res) => {
   try {
+    console.log('Getting products...')
     // Fetch all products without any initial filter
     const products = await Product.find()
       .select(
@@ -12,6 +13,8 @@ exports.getProducts = async (req, res) => {
       )
       .sort({ createdAt: -1 })
       .lean()
+
+    console.log(`Found ${products.length} products`)
 
     // Format products consistently
     const formattedProducts = products.map((product) => ({
@@ -29,11 +32,12 @@ exports.getProducts = async (req, res) => {
     res.setHeader('Content-Type', 'application/json')
     return res.status(200).json({
       success: true,
+      count: products.length,
       products: formattedProducts,
     })
   } catch (error) {
     console.error('Product fetch error:', error)
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching products',
       error: error.message,

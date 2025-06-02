@@ -3,9 +3,10 @@ import { ProductService } from '../../../services/productService'
 import { useCart } from '../../../context/CartContext'
 import { categories } from '../../../constants/categories'
 import './ProductCards.css'
+import { toast } from 'react-toastify'
 
 const ProductCards = ({ category = null, searchTerm = '' }) => {
-  const { addToCart } = useCart()
+  const { addToCart, cartItems } = useCart()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -16,14 +17,13 @@ const ProductCards = ({ category = null, searchTerm = '' }) => {
         setLoading(true)
         setError(null)
 
-        // Always fetch all products initially
         const response = await ProductService.getAllProducts()
-
-        if (!response || !response.success) {
-          throw new Error(response?.error || 'Failed to fetch products')
+        
+        if (!response || (!response.products && !Array.isArray(response))) {
+          throw new Error('Invalid response format')
         }
 
-        const productsData = response.products || []
+        const productsData = response.products || response || []
         const mappedProducts = productsData.map((product) => ({
           _id: product._id || `temp-${Math.random()}`,
           name: product.name || 'Unnamed Product',
@@ -80,9 +80,35 @@ const ProductCards = ({ category = null, searchTerm = '' }) => {
   }
 
   const getStockStatus = (stock) => {
-    if (stock > 10) return { label: 'In Stock', className: 'in-stock' }
-    if (stock > 0) return { label: 'Low Stock', className: 'low-stock' }
-    return { label: 'Out of Stock', className: 'out-of-stock' }
+    if (stock > 10) {
+      return { 
+        label: 'In Stock', 
+        className: 'in-stock',
+        icon: 'fa-check-circle'
+      };
+    }
+    if (stock > 0) {
+      return { 
+        label: `Only ${stock} left`, 
+        className: 'low-stock',
+        icon: 'fa-exclamation-circle'
+      };
+    }
+    return { 
+      label: 'Out of Stock', 
+      className: 'out-of-stock',
+      icon: 'fa-times-circle'
+    };
+  }
+
+  const renderStockStatus = (stock) => {
+    const status = getStockStatus(stock);
+    return (
+      <span className={`stock-badge ${status.className}`}>
+        <i className={`fas ${status.icon}`}></i>
+        {status.label}
+      </span>
+    );
   }
 
   const renderRatingStars = (rating) => {
@@ -117,6 +143,53 @@ const ProductCards = ({ category = null, searchTerm = '' }) => {
       </>
     )
   }
+
+  const handleAddToCart = (product) => {
+    if (product.stock <= 0) {
+      toast.error('Product is out of stock')
+      return
+    }
+
+    const currentStock = product.stock
+    const cartQty = getCartQuantity(product._id) // Add this helper function
+
+    if (cartQty >= currentStock) {
+      toast.warning(`Only ${currentStock} items available`)
+      return
+    }
+
+    addToCart(product)
+    toast.success('Added to cart!')
+  }
+
+  const getCartQuantity = (productId) => {
+    const existingItem = cartItems?.find(item => item._id === productId)
+    return existingItem?.quantity || 0
+  }
+
+  const getStockDisplay = (product) => {
+    const cartQty = getCartQuantity(product._id);
+    const remainingStock = product.stock - cartQty;
+    
+    if (remainingStock <= 0) return 'Out of Stock';
+    if (remainingStock <= 5) return `${remainingStock} left`;
+    return 'In Stock';
+  };
+
+  const getAddToCartButtonText = (product) => {
+    if (product.stock <= 0) {
+      return (
+        <>
+          Out of Stock <i className="fas fa-ban"></i>
+        </>
+      );
+    }
+    return (
+      <>
+        Add to Cart <i className="fas fa-cart-plus"></i>
+      </>
+    );
+  };
 
   return (
     <div className="products-section">
@@ -161,26 +234,16 @@ const ProductCards = ({ category = null, searchTerm = '' }) => {
                   <span className="price">${product.price.toFixed(2)}</span>
                 </div>
                 <div className="stock-status">
-                  <span className={getStockStatus(product.stock).className}>
-                    {getStockStatus(product.stock).label}
-                  </span>
+                  {renderStockStatus(product.stock)}
                 </div>
                 <button
                   className={`add-to-cart-btn ${
                     product.stock <= 0 ? 'out-of-stock' : ''
                   }`}
-                  onClick={() => addToCart(product)}
+                  onClick={() => handleAddToCart(product)}
                   disabled={product.stock <= 0}
                 >
-                  {product.stock > 0 ? (
-                    <>
-                      Add to Cart <i className="fas fa-cart-plus"></i>
-                    </>
-                  ) : (
-                    <>
-                      Out of Stock <i className="fas fa-ban"></i>
-                    </>
-                  )}
+                  {getAddToCartButtonText(product)}
                 </button>
               </div>
             </div>

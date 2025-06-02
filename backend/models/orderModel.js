@@ -2,14 +2,9 @@ const mongoose = require('mongoose')
 
 const orderSchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: false, // Make it optional for guest checkout
-    },
     orderItems: [
       {
-        productId: {
+        product: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'Product',
           required: true,
@@ -22,28 +17,28 @@ const orderSchema = new mongoose.Schema(
         price: {
           type: Number,
           required: true,
-          min: 0,
         },
       },
     ],
     shippingAddress: {
       name: String,
-      mobile: String,
       street: String,
       city: String,
       state: String,
       pincode: String,
+      mobile: String,
     },
-    totalAmount: Number,
+    totalAmount: {
+      type: Number,
+      required: true,
+    },
+    paymentMethod: {
+      type: String,
+      required: true,
+    },
     status: {
       type: String,
-      enum: ['processing', 'shipped', 'delivered', 'cancelled'],
       default: 'processing',
-    },
-    paymentStatus: {
-      type: String,
-      enum: ['pending', 'paid', 'failed'],
-      default: 'pending',
     },
   },
   {
@@ -51,7 +46,4 @@ const orderSchema = new mongoose.Schema(
   }
 )
 
-
-
-const orderModel = mongoose.model('Order', orderSchema)
-module.exports = orderModel
+module.exports = mongoose.model('Order', orderSchema)
