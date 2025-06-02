@@ -12,7 +12,7 @@ const orders = require('./routes/order')
 const app = express()
 app.use(
   cors({
-    origin: ['https://holohenna-host.vercel.app/'],
+    origin: ['https://holohenna-host.vercel.app'],
     methods: ['POST', 'GET'],
     credentials: true,
   })
