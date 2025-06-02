@@ -50,18 +50,20 @@ const ProductCards = ({ category = null, searchTerm = '' }) => {
   }, []) // Remove category dependency
 
   const getCategoryDisplay = (categoryValue) => {
-    const category = categories.find(cat => cat.value === categoryValue);
-    return category ? category.name : categoryValue;
-  };
+    const category = categories.find((cat) => cat.value === categoryValue)
+    return category ? category.name : categoryValue
+  }
 
   // Filter products client-side
   const filteredProducts = products.filter((product) => {
-    const matchesCategory = !category || category === 'All Products' || product.category === category;
-    const matchesSearch = !searchTerm || 
+    const matchesCategory =
+      !category || category === 'All Products' || product.category === category
+    const matchesSearch =
+      !searchTerm ||
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    return matchesCategory && matchesSearch;
+      product.description.toLowerCase().includes(searchTerm.toLowerCase())
+
+    return matchesCategory && matchesSearch
   })
 
   const imagePaths = {
@@ -92,7 +94,11 @@ const ProductCards = ({ category = null, searchTerm = '' }) => {
       <>
         {/* Full stars */}
         {[...Array(fullStars)].map((_, i) => (
-          <i key={`full-${i}`} className="fas fa-star" style={{ color: '#FFD700' }} />
+          <i
+            key={`full-${i}`}
+            className="fas fa-star"
+            style={{ color: '#FFD700' }}
+          />
         ))}
 
         {/* Half star */}
@@ -102,7 +108,11 @@ const ProductCards = ({ category = null, searchTerm = '' }) => {
 
         {/* Empty stars */}
         {[...Array(emptyStars)].map((_, i) => (
-          <i key={`empty-${i}`} className="far fa-star" style={{ color: '#E0E0E0' }} />
+          <i
+            key={`empty-${i}`}
+            className="far fa-star"
+            style={{ color: '#E0E0E0' }}
+          />
         ))}
       </>
     )
@@ -156,7 +166,9 @@ const ProductCards = ({ category = null, searchTerm = '' }) => {
                   </span>
                 </div>
                 <button
-                  className={`add-to-cart-btn ${product.stock <= 0 ? 'out-of-stock' : ''}`}
+                  className={`add-to-cart-btn ${
+                    product.stock <= 0 ? 'out-of-stock' : ''
+                  }`}
                   onClick={() => addToCart(product)}
                   disabled={product.stock <= 0}
                 >

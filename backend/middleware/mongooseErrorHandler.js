@@ -1,19 +1,19 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 function mongooseErrorHandler(err, req, res, next) {
   if (err instanceof mongoose.Error.CastError) {
     return res.status(400).json({
       success: false,
-      message: `Invalid ${err.path}: ${err.value}`
-    });
+      message: `Invalid ${err.path}: ${err.value}`,
+    })
   }
   if (err instanceof mongoose.Error.ValidationError) {
     return res.status(400).json({
       success: false,
-      message: err.message
-    });
+      message: err.message,
+    })
   }
-  next(err);
+  next(err)
 }
 
-module.exports = mongooseErrorHandler;
+module.exports = mongooseErrorHandler

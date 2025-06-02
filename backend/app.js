@@ -50,7 +50,43 @@ app.use((req, res) => {
   })
 })
 
-const PORT = process.env.PORT || 5000
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+const PORT = process.env.PORT || 5000;
+
+const findAvailablePort = async (startPort) => {
+  let port = startPort;
+  while (true) {
+    try {
+      await new Promise((resolve, reject) => {
+        const server = app.listen(port)
+          .once('listening', () => {
+            server.close();
+            resolve();
+          })
+          .once('error', (err) => {
+            if (err.code === 'EADDRINUSE') {
+              reject();
+            } else {
+              reject(err);
+            }
+          });
+      });
+      return port;
+    } catch (err) {
+      if (port >= startPort + 100) {
+        throw new Error('No available ports found');
+      }
+      port++;
+    }
+  }
+};
+
+findAvailablePort(PORT)
+  .then(port => {
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  })
+  .catch(err => {
+    console.error('Failed to start server:', err);
+    process.exit(1);
+  });

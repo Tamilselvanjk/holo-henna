@@ -7,7 +7,9 @@ exports.getProducts = async (req, res) => {
   try {
     // Fetch all products without any initial filter
     const products = await Product.find()
-      .select('name price description ratings images category stock numOfReviews')
+      .select(
+        'name price description ratings images category stock numOfReviews'
+      )
       .sort({ createdAt: -1 })
       .lean()
 

@@ -5,73 +5,67 @@ const Product = require('../models/productModel')
 
 exports.createOrder = async (req, res) => {
   try {
-    const { cartItems, shippingAddress, totalAmount } = req.body
+    const { orderItems, ...orderData } = req.body
 
-    if (!cartItems?.length || !shippingAddress) {
+    // Validate if orderItems exists and is not empty
+    if (!orderItems || orderItems.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required order information',
+        message: 'Order items are required',
       })
     }
 
-    // Create guest user if needed
-    let userId
-    if (req.body.userId) {
-      userId = req.body.userId
-    } else {
-      const guestUser = await User.create({
-        name: shippingAddress.name,
-        email: `guest_${Date.now()}@temp.com`,
-        mobile: shippingAddress.mobile,
-        isGuest: true,
-      })
-      userId = guestUser._id
-    }
+    // First verify all products exist before creating the order
+    const productIds = orderItems.map((item) => item.product)
+    const products = await Product.find({ _id: { $in: productIds } })
 
-    // Format order items
-    const orderItems = await Promise.all(
-      cartItems.map(async (item) => {
-        const product = await Product.findById(item.product._id)
-        if (!product) {
-          throw new Error(`Product not found: ${item.product._id}`)
-        }
-        return {
-          productId: product._id,
-          quantity: item.quantity,
-          price: product.price,
-        }
-      })
+    // Check if all products were found
+    const foundProductIds = products.map((p) => p._id.toString())
+    const missingProducts = productIds.filter(
+      (id) => !foundProductIds.includes(id)
     )
 
-    // Create order
-    const order = await orderModel.create({
-      userId,
-      orderItems,
-      shippingAddress,
-      totalAmount,
-      status: 'processing',
-      paymentStatus: 'pending',
+    if (missingProducts.length > 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Products not found: ${missingProducts.join(', ')}`,
+      })
+    }
+
+    // Calculate total prices
+    const orderItemsWithDetails = orderItems.map((item) => {
+      const product = products.find(
+        (p) => p._id.toString() === item.product
+      )
+      return {
+        quantity: item.quantity,
+        product: item.product,
+        price: product.price,
+      }
     })
 
-    // Populate product details for response
-    const populatedOrder = await orderModel
-      .findById(order._id)
-      .populate({
-        path: 'orderItems.productId',
-        select: 'name price images',
-      })
-      .lean()
+    const totalPrices = orderItemsWithDetails.reduce((total, item) => {
+      return total + item.price * item.quantity
+    }, 0)
+
+    const order = new orderModel({
+      orderItems: orderItemsWithDetails,
+      ...orderData,
+      totalAmount: totalPrices,
+    })
+
+    const createdOrder = await order.save()
 
     res.status(201).json({
       success: true,
-      message: 'Order created successfully',
-      order: populatedOrder,
+      data: createdOrder,
     })
   } catch (error) {
     console.error('Order creation error:', error)
     res.status(500).json({
       success: false,
-      message: error.message || 'Failed to create order',
+      message: 'Error creating order',
+      error: error.message,
     })
   }
 }
