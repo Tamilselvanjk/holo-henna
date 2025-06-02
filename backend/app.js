@@ -10,13 +10,13 @@ const products = require('./routes/product')
 const orders = require('./routes/order')
 
 const app = express()
-app.use(cors(
-    {
-        origin: ["https://deploy-mern-frontend.vercel.app"],
-        methods: ["POST", "GET"],
-        credentials: true
-    }
-));
+app.use(
+  cors({
+    origin: ['https://holohenna-host.vercel.app/'],
+    methods: ['POST', 'GET'],
+    credentials: true,
+  })
+)
 app.use(express.json())
 
 mongoose.connect('mongodb+srv://tamil:tamiljk@cluster0.cjirtjh.mongodb.net/');
