@@ -1,37 +1,28 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 const path = require('path')
 const cors = require('cors')
-const connectDatabase = require('./config/connectDatabase')
 
-
-// Import routes
-const products = require('./routes/product')
-const orders = require('./routes/order')
-
-const app = express()
-app.use(
-  cors({
-    origin: ['https://holohenna-host.vercel.app'],
-    methods: ['POST', 'GET'],
-    credentials: true,
-  })
-)
-app.use(express.json())
-
-mongoose.connect('mongodb+srv://tamil:tamiljk@cluster0.cjirtjh.mongodb.net/');
-
-app.get("/", (req, res) => {
-    res.json("Hello");
-})
-
+// Load env config first
 dotenv.config({ path: path.join(__dirname, 'config', 'config.env') })
 
-connectDatabase()
+// Initialize express
+const app = express()
 
-// Use Object.assign instead of util._extend for configurations
+// Database connection
+mongoose.connect(process.env.DB_URL)
+  .then(() => {
+    console.log('MongoDB connected successfully');
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
+
+// CORS configuration
 const corsOptions = {
-  origin: ['http://localhost:3000'],
+  origin: ['http://localhost:3000', 'https://holohenna-host.vercel.app'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -40,11 +31,14 @@ const corsOptions = {
 app.use(cors(corsOptions))
 app.use(express.json())
 
+// Import routes
+const products = require('./routes/product')
+const orders = require('./routes/order')
+
 // Routes
 app.use('/api/v1/products', products)
 app.use('/api/v1/order', orders) // Keep this for backward compatibility
 app.use('/api/v1/orders', orders) // Add this for consistent API routing
-
 
 // Error handling middleware
 app.use((err, req, res, next) => {
