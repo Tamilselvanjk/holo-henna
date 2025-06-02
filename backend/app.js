@@ -10,6 +10,14 @@ const products = require('./routes/product')
 const orders = require('./routes/order')
 
 const app = express()
+app.use(cors(
+    {
+        origin: ["https://deploy-mern-frontend.vercel.app"],
+        methods: ["POST", "GET"],
+        credentials: true
+    }
+));
+app.use(express.json())
 
 dotenv.config({ path: path.join(__dirname, 'config', 'config.env') })
 
