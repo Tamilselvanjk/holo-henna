@@ -32,7 +32,7 @@ app.use(express.json())
 
 // Debug middleware
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path}`)
+
   next()
 })
 
@@ -52,7 +52,7 @@ app.use((err, req, res, next) => {
 
 // 404 handler - must be last
 app.use((req, res) => {
-  console.log('404 Not Found:', req.method, req.path)
+ 
   res.status(404).json({
     success: false,
     error: 'Route not found',

@@ -87,10 +87,12 @@ const OrderSuccess = () => {
         </p>
 
         <div className="action-buttons">
-          <Link to="/" className="continue-shopping">
+          <Link to="/" className="action-btn continue-shopping">
+            <i className="fas fa-shopping-cart"></i>
             Continue Shopping
           </Link>
-          <Link to="/orders" className="view-order">
+          <Link to="/orders" className="action-btn view-orders">
+            <i className="fas fa-list-ul"></i>
             View Orders
           </Link>
         </div>

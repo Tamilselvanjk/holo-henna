@@ -5,7 +5,7 @@ const Product = require('../models/productModel')
 
 exports.getProducts = async (req, res) => {
   try {
-    console.log('Getting products...')
+   
     // Fetch all products without any initial filter
     const products = await Product.find()
       .select(
@@ -14,7 +14,7 @@ exports.getProducts = async (req, res) => {
       .sort({ createdAt: -1 })
       .lean()
 
-    console.log(`Found ${products.length} products`)
+   
 
     // Format products consistently
     const formattedProducts = products.map((product) => ({

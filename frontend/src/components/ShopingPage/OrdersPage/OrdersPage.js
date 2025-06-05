@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import './OrdersPage.css'
 
 const OrdersPage = () => {
+  const navigate = useNavigate()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -111,7 +113,17 @@ const OrdersPage = () => {
 
   return (
     <div className="orders-page">
-      <h2>Your Orders</h2>
+      <div className="orders-header">
+        <h2>Your Orders</h2>
+        <div className="nav-buttons">
+          <button onClick={() => navigate(-1)} className="back-btn">
+            <i className="fas fa-arrow-left"></i> Back
+          </button>
+          <Link to="/" className="shop-btn">
+            <i className="fas fa-shopping-cart"></i> Continue Shopping
+          </Link>
+        </div>
+      </div>
       <div className="orders-list">
         {orders.map((order) => (
           <div key={order._id} className="order-card">
