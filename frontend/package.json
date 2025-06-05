@@ -25,8 +25,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    
-    "build": "react-scripts build",
+    "install-deps": "cd project/backend && npm install",
+    "build": "cd project/backend && npm install",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "install-frontend": "cd project/frontend && npm install",
@@ -35,14 +35,14 @@
     "build-backend": "cd project/backend && npm run build",
     "start": "cd project/backend && npm start"
   },
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
     ]
-  },
-  "engines": {
-    "node": ">=14.0.0"
   },
   "browserslist": {
     "production": [
