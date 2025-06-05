@@ -27,7 +27,6 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions))
-
 app.use(express.json())
 
 // Debug middleware
@@ -50,14 +49,32 @@ app.use((err, req, res, next) => {
   })
 })
 
-// 404 handler - must be last
-app.use((req, res) => {
- 
-  res.status(404).json({
-    success: false,
-    error: 'Route not found',
-    path: req.path,
+// API root route
+app.get('/api', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'HoloHenna API is running',
+    endpoints: {
+      products: '/api/v1/products',
+      orders: '/api/v1/orders'
+    }
   })
 })
+
+// Root route handler
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'HoloHenna API is running'
+  })
+})
+
+// Handle React routing, return all requests to React app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'))
+})
+
+
+
 
 module.exports = app
