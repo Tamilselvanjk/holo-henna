@@ -25,15 +25,14 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "install-deps": "cd project/backend && npm install",
-    "build": "cd project/backend && npm install",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "install-frontend": "cd project/frontend && npm install",
-    "install-backend": "cd project/backend && npm install",
-    "build-frontend": "cd project/frontend && npm run build",
-    "build-backend": "cd project/backend && npm run build",
-    "start": "cd project/backend && npm start"
+    "install-frontend": "npm install",
+    "install-backend": "cd ../backend && npm install",
+    "build-frontend": "npm run build",
+    "build-backend": "cd ../backend && npm run build"
   },
   "engines": {
     "node": ">=14.0.0"
