@@ -4,26 +4,23 @@ module.exports = function (app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: process.env.REACT_APP_API_URL || 'http://localhost:5000',
+      target: 'http://localhost:5000',
       changeOrigin: true,
-      secure: false,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      },
-      pathRewrite: {
-        '^/api': '/api/v1'
-      },
-      onProxyReq: (proxyReq, req, res) => {
+      onProxyReq: function (proxyReq, req, res) {
+        // For debugging
         console.log('Proxying:', req.method, req.path)
       },
-      onError: (err, req, res) => {
+      onError: function (err, req, res) {
         console.error('Proxy Error:', err)
         res.writeHead(500, {
           'Content-Type': 'application/json',
         })
-        res.end(JSON.stringify({ message: 'Proxy error' }))
+        res.end(
+          JSON.stringify({
+            message:
+              'Backend server is not running. Please start the backend server.',
+          })
+        )
       },
     })
   )

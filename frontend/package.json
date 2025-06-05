@@ -25,19 +25,17 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "build": "NODE_OPTIONS=--max-old-space-size=2048 react-scripts build",
-    "start": "NODE_OPTIONS=--max-old-space-size=2048 node index.js",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "install-frontend": "npm install",
     "install-backend": "cd ../backend && npm install",
     "build-frontend": "npm run build",
-    "build-backend": "cd ../backend && npm run build",
-    "homepage": "https://holo-henna-frontend.onrender.com"
+    "build-backend": "cd ../backend && npm run build"
   },
   "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=6.0.0"
+    "node": ">=14.0.0"
   },
   "eslintConfig": {
     "extends": [
