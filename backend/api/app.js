@@ -74,7 +74,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'))
 })
 
-
+app.use('/api/v1/products', require('../routes/product'))
 
 
 module.exports = app
