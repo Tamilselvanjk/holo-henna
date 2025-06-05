@@ -81,5 +81,16 @@ app.get('*', (req, res) => {
 
 app.use('/api/v1/products', require('../routes/product'))
 
+app.use(
+  cors({
+    origin: 'https://holo-henna-frontend.onrender.com',
+    credentials: true,
+  })
+)
+
+
+
+
+
 
 module.exports = app

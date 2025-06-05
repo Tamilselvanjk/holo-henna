@@ -1,6 +1,4 @@
-
 const { createProxyMiddleware } = require('http-proxy-middleware')
-const CORS_CONFIG = require('.././../backend/config/cors').default
 
 module.exports = function (app) {
   app.use(
@@ -8,21 +6,24 @@ module.exports = function (app) {
     createProxyMiddleware({
       target: process.env.REACT_APP_API_URL || 'http://localhost:5000',
       changeOrigin: true,
+      secure: false,
       headers: {
-        ...CORS_CONFIG.headers,
-        host: process.env.REACT_APP_HOST
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       },
-      onProxyReq: function (proxyReq, req, res) {
+      pathRewrite: {
+        '^/api': '/api/v1'
+      },
+      onProxyReq: (proxyReq, req, res) => {
         console.log('Proxying:', req.method, req.path)
       },
-      onError: function (err, req, res) {
+      onError: (err, req, res) => {
         console.error('Proxy Error:', err)
         res.writeHead(500, {
           'Content-Type': 'application/json',
         })
-        res.end(JSON.stringify({
-          message: 'Backend server connection error'
-        }))
+        res.end(JSON.stringify({ message: 'Proxy error' }))
       },
     })
   )
