@@ -332,16 +332,16 @@
     border-bottom: 1px solid #eee;
     padding-bottom: 1.5rem;
   }
-  
+
   .orders-header {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .nav-buttons {
     width: 100%;
   }
-  
+
   .back-btn,
   .shop-btn {
     flex: 1;

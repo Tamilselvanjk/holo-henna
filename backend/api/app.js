@@ -20,7 +20,7 @@ mongoose
 
 // CORS configuration
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://holohenna-host.vercel.app'],
+  origin: ['http://localhost:3000', 'https://holohenna-host.vercel.app','https://holo-henna.onrender.com'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],

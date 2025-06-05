@@ -20,9 +20,7 @@ exports.createOrder = async (req, res) => {
 
     // Verify all products exist and have sufficient stock
     for (const item of orderItems) {
-      const product = products.find(
-        (p) => p._id.toString() === item.product
-      )
+      const product = products.find((p) => p._id.toString() === item.product)
       if (!product) {
         return res.status(400).json({
           success: false,
