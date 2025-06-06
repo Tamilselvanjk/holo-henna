@@ -4,15 +4,22 @@ const path = require('path');
 module.exports = function(app) {
   const target = process.env.NODE_ENV === 'production'
     ? 'https://holo-henna.onrender.com'
-    : 'http://localhost:5000';
+    : 'http://localhost:5000'; // Changed from 3000 to 5000
 
   const proxyConfig = {
     target,
     changeOrigin: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: false,
     ws: true,
     xfwd: true,
     onError: (err, req, res) => {
+      // Handle connection errors
+      if (err.code === 'ECONNREFUSED') {
+        const productionUrl = 'https://holo-henna.onrender.com';
+        // Redirect to production URL if local fails
+        res.redirect(`${productionUrl}${req.path}`);
+        return;
+      }
       console.error('Proxy Error:', err);
       res.writeHead(500, {
         'Content-Type': 'application/json',
@@ -61,15 +68,13 @@ module.exports = function(app) {
         '^/api': '/api/v1'
       },
       onProxyReq: (proxyReq, req, res) => {
-        if (req.method === 'POST') {
-          const contentType = proxyReq.getHeader('Content-Type');
-          if (contentType && contentType.includes('application/json')) {
-            const body = JSON.stringify(req.body);
-            proxyReq.setHeader('Content-Length', Buffer.byteLength(body));
-            proxyReq.write(body);
-          }
+        if (req.method === 'POST' && req.path.includes('/orders/create')) {
+          const bodyData = JSON.stringify(req.body);
+          proxyReq.setHeader('Content-Type', 'application/json');
+          proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+          proxyReq.write(bodyData);
         }
-      },
+      }
     })
   );
 

@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 import PaymentService from '../../../services/paymentService'
+import { OrderService } from '../../../services/orderService'
 import './PaymentForm.css'
 
 const PaymentForm = ({
   total = 0,
   onBack,
-  onComplete,
   cartItems = [], // Add default empty array
   shippingAddress = {}, // Add default empty object
 }) => {
@@ -103,28 +103,13 @@ const PaymentForm = ({
     try {
       validatePayment(formData)
 
-      // Validate cart items
-      if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
-        throw new Error('Cart is empty')
-      }
-
       const orderItems = cartItems
-        .map((item) => {
-          if (!item._id) {
-            console.error('Invalid item:', item);
-            return null;
-          }
-          return {
-            product: item._id,
-            quantity: Number(item.quantity || 1),
-            price: Number(item.price || 0),
-          }
-        })
-        .filter(item => item && item.product && item.quantity > 0);
-
-      if (orderItems.length === 0) {
-        throw new Error('No valid items in cart')
-      }
+        .map((item) => ({
+          product: item._id,
+          quantity: Number(item.quantity || 1),
+          price: Number(item.price || 0),
+        }))
+        .filter(item => item.product && item.quantity > 0)
 
       const orderData = {
         orderItems,
@@ -141,18 +126,8 @@ const PaymentForm = ({
         paymentDetails: formData
       }
 
-      console.log('Sending order data:', orderData); // Debug log
-
-      const response = await fetch('/api/v1/orders/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
-      })
-
-      const result = await response.json()
-
+      const result = await OrderService.createOrder(orderData)
+      
       if (!result.success) {
         throw new Error(result.message || 'Failed to create order')
       }
@@ -164,15 +139,18 @@ const PaymentForm = ({
         autoClose: 2000,
       })
 
-      // Navigate to success page with correct order ID
       const orderId = result.data?._id
       if (orderId) {
-        window.location.href = `/order-success/${orderId}`
+        // Use absolute URL for order success page
+        const baseUrl = process.env.NODE_ENV === 'production' 
+          ? 'https://holo-henna.onrender.com'
+          : window.location.origin;
+        window.location.href = `${baseUrl}/order-success/${orderId}`
       }
     } catch (error) {
       console.error('Payment error:', error)
       toast.update(processingToast, {
-        render: error.message || 'Payment failed',
+        render: error.message || 'Payment failed. Please try again.',
         type: 'error',
         isLoading: false,
         autoClose: 5000,

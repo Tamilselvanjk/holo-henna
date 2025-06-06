@@ -11,13 +11,14 @@ const OrderSuccess = () => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await fetch(`/api/v1/orders/${orderId}`)
+        const response = await fetch(`/api/v1/order/${orderId}`)
         const data = await response.json()
 
         if (!data.success) {
           throw new Error(data.message || 'Failed to fetch order')
         }
 
+        console.log('Order details:', data) // Debug log
         setOrderDetails(data.data || data.order)
       } catch (error) {
         console.error('Error:', error)
@@ -69,12 +70,55 @@ const OrderSuccess = () => {
           <div className="order-id">
             Order ID: <span>#{orderDetails?._id?.slice(-8)}</span>
           </div>
+
+          {/* Order Items List */}
+          <div className="order-items-list">
+            <h4>Ordered Items</h4>
+            {orderDetails?.orderItems?.map((item, index) => (
+              <div key={index} className="order-item">
+                <div className="item-image">
+                  {item.product?.images?.[0] && (
+                    <img
+                      src={item.product.images[0]}
+                      alt={item.product.name}
+                    />
+                  )}
+                </div>
+                <div className="item-details">
+                  <h5>{item.product?.name}</h5>
+                  <p className="item-quantity">Quantity: {item.quantity}</p>
+                  <p className="item-price">
+                    Price: {formatCurrency(item.price)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Shipping Details */}
+          <div className="shipping-info">
+            <h4>Shipping Address</h4>
+            <div className="address-details">
+              <p>
+                <strong>{orderDetails?.shippingAddress?.name}</strong>
+              </p>
+              <p>{orderDetails?.shippingAddress?.street}</p>
+              <p>
+                {orderDetails?.shippingAddress?.city},{' '}
+                {orderDetails?.shippingAddress?.state}
+              </p>
+              <p>PIN: {orderDetails?.shippingAddress?.pincode}</p>
+              <p>Mobile: {orderDetails?.shippingAddress?.mobile}</p>
+            </div>
+          </div>
+
           <div className="order-status">
             Status:{' '}
             <span className={`status ${orderDetails?.status}`}>
               {formatStatus(orderDetails?.status)}
             </span>
           </div>
+
           <div className="total-section">
             Total Amount:{' '}
             <span>{formatCurrency(orderDetails?.totalAmount)}</span>
