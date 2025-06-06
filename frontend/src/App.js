@@ -25,8 +25,8 @@ const ProtectedRoute = ({ children }) => {
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <AuthProvider>
+    <AuthProvider>
+      <BrowserRouter>
         <CartProvider>
           <div className="app">
             <Header />
@@ -58,8 +58,8 @@ const App = () => {
             <ToastContainer position="top-center" limit={3} />
           </div>
         </CartProvider>
-      </AuthProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 
