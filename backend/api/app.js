@@ -63,6 +63,26 @@ app.use((req, res, next) => {
 app.use('/api/v1/products', require('../routes/product'))
 app.use('/api/v1/orders', require('../routes/order'))
 
+// Add health check endpoint
+app.get('/api/v1/health', (req, res) => {
+  if (mongoose.connection.readyState === 1) {
+    res.status(200).json({ status: 'healthy', message: 'Server is running' });
+  } else {
+    res.status(503).json({ status: 'unhealthy', message: 'Database connection issue' });
+  }
+});
+
+// Improve error handling middleware
+app.use((err, req, res, next) => {
+  console.error('API Error:', err);
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || 'Internal Server Error',
+    error: process.env.NODE_ENV === 'development' ? err.stack : ''
+  });
+});
+
 // Error handling
 app.use((err, req, res, next) => {
   console.error('API Error:', err)

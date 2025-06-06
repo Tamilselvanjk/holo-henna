@@ -103,17 +103,45 @@ const PaymentForm = ({
     try {
       validatePayment(formData)
 
+      // Validate cart items
+      if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
+        throw new Error('Cart is empty')
+      }
+
+      const orderItems = cartItems
+        .map((item) => {
+          if (!item._id) {
+            console.error('Invalid item:', item);
+            return null;
+          }
+          return {
+            product: item._id,
+            quantity: Number(item.quantity || 1),
+            price: Number(item.price || 0),
+          }
+        })
+        .filter(item => item && item.product && item.quantity > 0);
+
+      if (orderItems.length === 0) {
+        throw new Error('No valid items in cart')
+      }
+
       const orderData = {
-        orderItems: cartItems.map((item) => ({
-          product: item._id, // Use product instead of productId
-          quantity: Number(item.quantity),
-          price: Number(item.price),
-        })),
-        shippingAddress,
+        orderItems,
+        shippingAddress: {
+          name: shippingAddress.name,
+          street: shippingAddress.street,
+          city: shippingAddress.city,
+          state: shippingAddress.state,
+          pincode: shippingAddress.pincode,
+          mobile: shippingAddress.mobile
+        },
         totalAmount: Number(total),
         paymentMethod,
-        paymentDetails: formData,
+        paymentDetails: formData
       }
+
+      console.log('Sending order data:', orderData); // Debug log
 
       const response = await fetch('/api/v1/orders/create', {
         method: 'POST',
