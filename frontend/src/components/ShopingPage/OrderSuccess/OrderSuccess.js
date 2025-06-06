@@ -11,19 +11,20 @@ const OrderSuccess = () => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await fetch(`/api/v1/order/${orderId}`)
+        const response = await fetch(`/api/v1/orders/${orderId}`)
         const data = await response.json()
 
         if (!data.success) {
           throw new Error(data.message || 'Failed to fetch order')
         }
 
-        console.log('Order details:', data) // Debug log
         setOrderDetails(data.data || data.order)
       } catch (error) {
-        console.error('Error:', error)
-        // Redirect to home if order not found
-        navigate('/', { replace: true })
+        console.error('Error fetching order:', error)
+        navigate('/orders', {
+          replace: true,
+          state: { error: 'Failed to load order details' },
+        })
       } finally {
         setLoading(false)
       }
@@ -72,8 +73,8 @@ const OrderSuccess = () => {
           </div>
 
           {/* Order Items List */}
-          <div className="order-items-list">
-            <h4>Ordered Items</h4>
+          <div className="order-items-section">
+            <h4>Order Items</h4>
             {orderDetails?.orderItems?.map((item, index) => (
               <div key={index} className="order-item">
                 <div className="item-image">
@@ -84,12 +85,10 @@ const OrderSuccess = () => {
                     />
                   )}
                 </div>
-                <div className="item-details">
+                <div className="item-info">
                   <h5>{item.product?.name}</h5>
-                  <p className="item-quantity">Quantity: {item.quantity}</p>
-                  <p className="item-price">
-                    Price: {formatCurrency(item.price)}
-                  </p>
+                  <p>Quantity: {item.quantity}</p>
+                  <p className="price">{formatCurrency(item.price)}</p>
                 </div>
               </div>
             ))}

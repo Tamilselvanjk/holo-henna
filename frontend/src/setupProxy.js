@@ -4,7 +4,7 @@ const path = require('path');
 module.exports = function(app) {
   const target = process.env.NODE_ENV === 'production'
     ? 'https://holo-henna.onrender.com'
-    : 'http://localhost:5000'; // Changed from 3000 to 5000
+    : 'http://localhost:3000'; // Changed from 3000 to 5000
 
   const proxyConfig = {
     target,
