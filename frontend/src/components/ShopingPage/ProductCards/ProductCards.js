@@ -16,7 +16,10 @@ const ProductCards = ({ category = null, searchTerm = '' }) => {
       try {
         setLoading(true)
         setError(null)
-
+        
+        const data = await ProductService.getAllProducts()
+        setProducts(data)
+        
         const response = await ProductService.getAllProducts()
         
         if (!response || (!response.products && !Array.isArray(response))) {
@@ -39,7 +42,8 @@ const ProductCards = ({ category = null, searchTerm = '' }) => {
         setProducts(mappedProducts)
       } catch (error) {
         console.error('Fetch error:', error)
-        setError('Failed to load products. Please try again later.')
+        setError(error.message)
+        toast.error('Failed to load products')
         setProducts([])
       } finally {
         setLoading(false)

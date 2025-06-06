@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { getProducts, getSingleProducts } = require('../controllers/productController');
 
-router.get('/', getProducts);
-router.get('/:id', getSingleProducts);
+router.route('/').get(getProducts)
+router.route('/:id').get(getSingleProducts)
 
 // Add test endpoint
 router.get('/test', (req, res) => {
