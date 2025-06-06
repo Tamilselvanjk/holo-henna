@@ -3,6 +3,7 @@ import { toast } from 'react-toastify'
 import PaymentService from '../../../services/paymentService'
 import { OrderService } from '../../../services/orderService'
 import './PaymentForm.css'
+import { useNavigate } from 'react-router-dom'
 
 const PaymentForm = ({
   total = 0,
@@ -20,6 +21,8 @@ const PaymentForm = ({
     cvv: '',
     upiId: '',
   })
+
+  const navigate = useNavigate()
 
   const upiApps = [
     { id: 'gpay', name: 'Google Pay', logo: '/webimg/gpay.jpg' },
@@ -132,20 +135,9 @@ const PaymentForm = ({
         throw new Error(result.message || 'Failed to create order')
       }
 
-      toast.update(processingToast, {
-        render: 'Order placed successfully!',
-        type: 'success',
-        isLoading: false,
-        autoClose: 2000,
-      })
-
       const orderId = result.data?._id
       if (orderId) {
-        // Use absolute URL for order success page
-        const baseUrl = process.env.NODE_ENV === 'production' 
-          ? 'https://holo-henna.onrender.com'
-          : window.location.origin;
-        window.location.href = `${baseUrl}/order-success/${orderId}`
+        navigate(`/order-success/${orderId}`, { replace: true })
       }
     } catch (error) {
       console.error('Payment error:', error)

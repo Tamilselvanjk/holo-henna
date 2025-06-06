@@ -34,23 +34,13 @@ module.exports = function (app) {
   }
 
   // Handle React routes that need direct access
-  const reactRoutes = ['/order-success', '/orders', '/products']
-  reactRoutes.forEach((route) => {
-    app.get(`${route}/*`, (req, res, next) => {
-      if (
-        req.url.includes('favicon.ico') ||
-        req.url.includes('manifest.json')
-      ) {
-        res.sendFile(
-          path.join(__dirname, '../public', req.url.replace(/%PUBLIC_URL%/g, ''))
-        )
-        return
-      }
-      if (req.url.startsWith('/api')) {
-        return next()
-      }
-      res.sendFile(path.join(__dirname, '../public/index.html'))
-    })
+  app.get(['/order-success/*', '/orders/*'], (req, res) => {
+    if (req.url.includes('favicon.ico') || req.url.includes('manifest.json')) {
+      const cleanPath = req.url.replace(/%PUBLIC_URL%/g, '')
+      res.sendFile(path.join(__dirname, '../public', cleanPath))
+      return
+    }
+    res.sendFile(path.join(__dirname, '../public/index.html'))
   })
 
   // Static files handling first
@@ -60,7 +50,7 @@ module.exports = function (app) {
     express.static(path.join(__dirname, '../public/favicon.ico'))
   )
 
-  // API endpoints proxy
+  // API endpoints proxy with order handling
   app.use(
     '/api/v1',
     createProxyMiddleware({
@@ -68,7 +58,8 @@ module.exports = function (app) {
       pathRewrite: undefined, // Don't rewrite paths for /api/v1
       onError: (err, req, res) => {
         if (err.code === 'ECONNREFUSED') {
-          return res.redirect(`https://holo-henna.onrender.com${req.url}`)
+          const prodUrl = 'https://holo-henna.onrender.com'
+          return res.redirect(`${prodUrl}${req.url}`)
         }
         res.writeHead(500, {
           'Content-Type': 'application/json',

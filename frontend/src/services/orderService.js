@@ -44,37 +44,34 @@ class OrderService {
   }
 
   static async getOrder(orderId) {
-    const maxRetries = 2;
-    let attempt = 0;
     let baseUrl = this.getBaseUrl();
+    const maxRetries = 3;
+    let attempt = 0;
 
     while (attempt < maxRetries) {
       try {
         const response = await fetch(`${baseUrl}/orders/${orderId}`, {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          }
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
         });
 
         if (!response.ok) {
+          if (baseUrl !== PROD_URL) {
+            baseUrl = PROD_URL;
+            attempt++;
+            continue;
+          }
           throw new Error(`Failed to fetch order: ${response.status}`);
         }
 
-        const data = await response.json();
-        if (!data.success) {
-          throw new Error(data.message || 'Failed to fetch order');
-        }
-
-        return data;
+        return response.json();
       } catch (error) {
         attempt++;
-        if (baseUrl !== PROD_URL) {
-          baseUrl = PROD_URL;
-          continue;
-        }
-        throw error;
+        if (attempt === maxRetries) throw error;
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
       }
     }
   }
