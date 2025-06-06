@@ -38,8 +38,25 @@ const corsOptions = {
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['Access-Control-Allow-Origin'],
-  maxAge: 86400, // 24 hours
+  maxAge: 86400,
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  // 24 hours
 }
+
+app.use(cors(corsOptions))
+app.use(express.json())
+
+
+// Add OPTIONS handling for preflight requests
+app.options('*', cors(corsOptions));
+
+// Debug middleware to log requests
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
+
 // Mount routes
 app.use('/api/v1/products', require('../routes/product'))
 app.use('/api/v1/orders', require('../routes/order'))
