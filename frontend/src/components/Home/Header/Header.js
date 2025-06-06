@@ -27,6 +27,20 @@ const Header = () => {
     }
   }
 
+  const getProfileImage = (user) => {
+    if (user?.photoURL) return user.photoURL
+    if (user?.displayName) {
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        user.displayName
+      )}&size=80&background=4285f4&color=fff`
+    }
+    return '/webimg/default-avatar.png'
+  }
+
+  const handleLogin = () => {
+    navigate('/login', { replace: true })
+  }
+
   return (
     <header className="header">
       <div className="top-bar">
@@ -84,22 +98,15 @@ const Header = () => {
               <div className="profile-section">
                 <div
                   className="profile-icon"
-                  onClick={() => navigate('/profile')}
+                  onClick={() => navigate('/profile', { replace: true })}
                 >
                   <img
-                    src={
-                      user.picture ||
-                      `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                        user.name
-                      )}&size=80&background=4285f4&color=fff`
-                    }
-                    alt={user.name}
+                    src={getProfileImage(user)}
+                    alt={user.displayName || 'Profile'}
                     className="header-profile-image"
                     onError={(e) => {
                       e.target.onerror = null
-                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                        user.name
-                      )}&size=80&background=4285f4&color=fff`
+                      e.target.src = '/webimg/default-avatar.png'
                     }}
                   />
                 </div>
@@ -108,10 +115,7 @@ const Header = () => {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => navigate('/login')}
-                className="login-button"
-              >
+              <button onClick={handleLogin} className="login-button">
                 <FaUser /> Login
               </button>
             )}

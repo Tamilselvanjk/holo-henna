@@ -29,6 +29,20 @@ const UserProfile = () => {
     }
   }, [isAuthenticated, user, navigate])
 
+  const getProfileImage = (user) => {
+    if (user?.photoURL) return user.photoURL
+    if (user?.displayName) {
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        user.displayName
+      )}&size=200&background=4285f4&color=fff`
+    }
+    return '/webimg/default-avatar.png'
+  }
+
+  const getDisplayName = (user) => {
+    return user?.displayName || user?.email?.split('@')[0] || 'User'
+  }
+
   if (!profile) {
     return (
       <div className="loading-container">
@@ -62,35 +76,27 @@ const UserProfile = () => {
               <div className="bubble bubble-16"></div>
             </div>
             <img
-              src={
-                profile.picture ||
-                `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                  profile.name
-                )}&size=200&background=4285f4&color=fff`
-              }
-              alt={profile.name}
+              src={getProfileImage(profile)}
+              alt={getDisplayName(profile)}
               className="profile-avatar"
               onError={(e) => {
                 e.target.onerror = null
-                e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                  profile.name
-                )}&size=200&background=4285f4&color=fff`
+                e.target.src = '/webimg/default-avatar.png'
               }}
             />
           </div>
-          <h2>{profile.name}</h2>
-          <div className="google-connected">
-            <button
-              className="google-button"
-              type="button"
-              onClick={handleGoogleLogin}
-            >
-              <FaGoogle /> Connected with Google
-            </button>
-          </div>
+          <h2>{getDisplayName(profile)}</h2>
+
+          {profile?.email && (
+            <div className="google-connected">
+              <span className="google-badge">
+                <FaGoogle /> Google Account
+              </span>
+              <p className="email">{profile.email}</p>
+            </div>
+          )}
         </div>
         <div className="profile-info">
-          <p className="email">{profile.email}</p>
           <button className="logout-button" onClick={logout}>
             <FaSignOutAlt /> Sign Out
           </button>
