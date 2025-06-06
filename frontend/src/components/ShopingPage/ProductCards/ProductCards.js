@@ -195,6 +195,19 @@ const ProductCards = ({ category = null, searchTerm = '' }) => {
     );
   };
 
+  const renderRatingAndReviews = (product) => {
+    return (
+      <div className="product-rating">
+        <div className="product-stars">
+          {renderRatingStars(product.ratings)}
+        </div>
+        <span className="review-count">
+          ({product.numOfReviews || 0})
+        </span>
+      </div>
+    );
+  };
+
   return (
     <div className="products-section">
       {loading ? (
@@ -228,12 +241,7 @@ const ProductCards = ({ category = null, searchTerm = '' }) => {
                 <div className="product-category">
                   {getCategoryDisplay(product.category)}
                 </div>
-                <div className="product-rating">
-                  <div className="product-stars">
-                    {renderRatingStars(product.ratings)}
-                  </div>
-                  <span className="review-count">({product.numOfReviews})</span>
-                </div>
+                {renderRatingAndReviews(product)}
                 <div className="product-price">
                   <span className="price">${product.price.toFixed(2)}</span>
                 </div>

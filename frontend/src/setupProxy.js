@@ -3,27 +3,21 @@ const path = require('path');
 const express = require('express');
 
 module.exports = function(app) {
-  // Static file handling first
-  app.use('/static', express.static(path.join(__dirname, '../public')));
-  app.use('/webimg', express.static(path.join(__dirname, '../public/webimg')));
-
   const proxyConfig = {
     target: 'http://localhost:5000',
     changeOrigin: true,
-    ws: false, // Disable WebSocket
+    ws: false,
     secure: false,
     logLevel: 'debug',
+    onProxyReq: (proxyReq, req) => {
+      console.log(`[Proxy] ${req.method} ${req.url} -> ${proxyReq.path}`);
+    },
     onError: (err, req, res) => {
       if (err.code === 'ECONNREFUSED') {
-        // Serve static files locally if backend is not available
-        if (req.path.match(/\.(jpg|png|svg|ico)$/)) {
-          try {
-            res.sendFile(path.join(__dirname, '../public', req.path));
-            return;
-          } catch (error) {
-            // Fall through to error response
-          }
-        }
+        // Fallback to production URL
+        const prodUrl = 'https://holo-henna.onrender.com';
+        res.redirect(`${prodUrl}/api/v1${req.url}`);
+        return;
       }
       res.writeHead(500, {
         'Content-Type': 'application/json',
@@ -37,13 +31,26 @@ module.exports = function(app) {
   };
 
   // API endpoints proxy
-  app.use(
-    '/api',
-    createProxyMiddleware({
-      ...proxyConfig,
-      pathRewrite: { '^/api': '/api/v1' }
-    })
-  );
+  app.use('/api/v1', createProxyMiddleware({
+    ...proxyConfig,
+    pathRewrite: undefined // Don't rewrite paths for /api/v1
+  }));
+
+  // Products endpoint proxy
+  app.use('/products', createProxyMiddleware({
+    ...proxyConfig,
+    pathRewrite: {
+      '^/products': '/api/v1/products'
+    },
+    onError: (err, req, res) => {
+      const prodUrl = 'https://holo-henna.onrender.com';
+      res.redirect(307, `${prodUrl}/api/v1/products${req.url}`);
+    }
+  }));
+
+  // Static file handling
+  app.use('/static', express.static(path.join(__dirname, '../public')));
+  app.use('/favicon.ico', express.static(path.join(__dirname, '../public/favicon.ico')));
 
   // Health check endpoint
   app.use(

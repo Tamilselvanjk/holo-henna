@@ -1,12 +1,11 @@
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
+const PROD_URL = 'https://holo-henna.onrender.com/api/v1';
+const DEV_URL = '/products'; // Simplified URL for development
 
 class ProductService {
   static async getAllProducts(category = null) {
     try {
-      console.log('Fetching from:', `${BASE_URL}/products`) // Debug log
-      const urlString = `${BASE_URL}/products${
-        category && category !== 'All Products' ? `?category=${category}` : ''
-      }`
+      const baseUrl = process.env.NODE_ENV === 'production' ? PROD_URL : DEV_URL;
+      const urlString = `${baseUrl}${category ? `?category=${category}` : ''}`
 
       console.log('Fetching products from:', urlString) // Debug log
 
@@ -37,7 +36,8 @@ class ProductService {
 
   static async getSingleProduct(id) {
     try {
-      const response = await fetch(`${BASE_URL}/products/${id}`, {
+      const baseUrl = process.env.NODE_ENV === 'production' ? PROD_URL : DEV_URL;
+      const response = await fetch(`${baseUrl}/products/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +61,8 @@ class ProductService {
 
   static async getOrder(orderId) {
     try {
-      const response = await fetch(`${BASE_URL}/orders/${orderId}`, {
+      const baseUrl = process.env.NODE_ENV === 'production' ? PROD_URL : DEV_URL;
+      const response = await fetch(`${baseUrl}/orders/${orderId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -82,6 +83,7 @@ class ProductService {
   }
 
   static async createOrder(orderData) {
+    const baseUrl = process.env.NODE_ENV === 'production' ? PROD_URL : DEV_URL;
     const maxRetries = 3
     let attempt = 0
 
@@ -89,7 +91,7 @@ class ProductService {
 
     while (attempt < maxRetries) {
       try {
-        const response = await fetch(`${BASE_URL}/orders/create`, {
+        const response = await fetch(`${baseUrl}/orders/create`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

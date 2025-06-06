@@ -55,13 +55,13 @@ app.options('*', cors(corsOptions));
 
 // Debug middleware to log requests
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  console.log(`[API] ${req.method} ${req.url}`);
   next();
 });
 
 // Mount routes
-app.use('/api/v1/products', require('../routes/product'))
-app.use('/api/v1/orders', require('../routes/order'))
+app.use('/api/v1/products', require('../routes/product'));
+app.use('/api/v1/orders', require('../routes/order'));
 
 // Add health check endpoint
 app.get('/api/v1/health', (req, res) => {
@@ -75,23 +75,12 @@ app.get('/api/v1/health', (req, res) => {
 // Improve error handling middleware
 app.use((err, req, res, next) => {
   console.error('API Error:', err);
-  const statusCode = err.statusCode || 500;
-  res.status(statusCode).json({
+  res.status(err.statusCode || 500).json({
     success: false,
     message: err.message || 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err.stack : ''
+    error: process.env.NODE_ENV === 'development' ? err.stack : undefined
   });
 });
-
-// Error handling
-app.use((err, req, res, next) => {
-  console.error('API Error:', err)
-  res.status(500).json({
-    success: false,
-    message: 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined,
-  })
-})
 
 // API root route
 app.get('/api', (req, res) => {
@@ -117,8 +106,5 @@ app.get('/', (req, res) => {
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'))
 })
-
-app.use('/api/v1/products', require('../routes/product'))
-
 
 module.exports = app

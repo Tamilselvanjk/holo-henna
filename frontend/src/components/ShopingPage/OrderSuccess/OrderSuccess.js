@@ -46,6 +46,14 @@ const OrderSuccess = () => {
     return status?.charAt(0).toUpperCase() + status?.slice(1) || 'Processing'
   }
 
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return ''
+    if (imagePath.startsWith('http')) return imagePath
+    return process.env.NODE_ENV === 'production'
+      ? `https://holo-henna.onrender.com${imagePath}`
+      : `${window.location.origin}${imagePath}`
+  }
+
   if (loading) {
     return (
       <div className="loading-spinner-container">
@@ -78,10 +86,14 @@ const OrderSuccess = () => {
             {orderDetails?.orderItems?.map((item, index) => (
               <div key={index} className="order-item">
                 <div className="item-image">
-                  {item.product?.images?.[0] && (
+                  {item.product?.images?.[0]?.image && (
                     <img
-                      src={item.product.images[0]}
-                      alt={item.product.name}
+                      src={getImageUrl(item.product.images[0].image)}
+                      alt={item.product.name || 'Product image'}
+                      onError={(e) => {
+                        e.target.onerror = null
+                        e.target.src = '/webimg/placeholder.jpg'
+                      }}
                     />
                   )}
                 </div>
