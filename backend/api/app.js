@@ -5,7 +5,10 @@ const path = require('path')
 const cors = require('cors')
 
 // Load env config
-dotenv.config({ path: path.join(__dirname, '..', 'config', 'config.env') })
+dotenv.config({ path: path.join(__dirname, '..', 'config', 'config.env') });
+
+
+
 
 const app = express()
 
@@ -19,30 +22,29 @@ mongoose
   })
 
 // CORS configuration
-const corsOptions = {
-  origin: function (origin, callback) {
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'https://holo-henna-frontend.onrender.com',
-      'https://holo-henna.onrender.com',
-    ]
+const corsOptions = Object.assign(
+  {},
+  {
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        'http://localhost:3000',
+        'https://holo-henna-frontend.onrender.com',
+        'https://holo-henna.onrender.com',
+      ]
 
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Access-Control-Allow-Origin'],
-  maxAge: 86400,
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
-  // 24 hours
-}
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Access-Control-Allow-Origin'],
+    maxAge: 86400,
+  }
+)
 
 app.use(cors(corsOptions))
 app.use(express.json())
