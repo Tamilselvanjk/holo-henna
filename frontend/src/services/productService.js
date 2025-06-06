@@ -1,11 +1,11 @@
 const PROD_URL = 'https://holo-henna.onrender.com/api/v1';
-const DEV_URL = '/products'; // Simplified URL for development
+const DEV_URL = '/api/v1'; // Change to use consistent API path
 
 class ProductService {
   static async getAllProducts(category = null) {
     try {
       const baseUrl = process.env.NODE_ENV === 'production' ? PROD_URL : DEV_URL;
-      const urlString = `${baseUrl}${category ? `?category=${category}` : ''}`
+      const urlString = `${baseUrl}/products${category ? `?category=${category}` : ''}`
 
       console.log('Fetching products from:', urlString) // Debug log
 
