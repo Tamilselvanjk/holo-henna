@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { signInWithPopup } from 'firebase/auth'
 import { auth, googleProvider } from '../../firebase/config'
 import { toast } from 'react-toastify'
@@ -16,6 +16,7 @@ import './Login.css'
 const Login = () => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleGoogleLogin = async () => {
     try {
@@ -24,7 +25,7 @@ const Login = () => {
 
       if (result.user) {
         toast.success('Successfully logged in!')
-        navigate(process.env.REACT_APP_AUTH_REDIRECT_URL || '/profile')
+        navigate('/profile', { replace: true })
       }
     } catch (error) {
       console.error('Login error:', error)
