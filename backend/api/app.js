@@ -5,10 +5,7 @@ const path = require('path')
 const cors = require('cors')
 
 // Load env config
-dotenv.config({ path: path.join(__dirname, '..', 'config', 'config.env') });
-
-
-
+dotenv.config({ path: path.join(__dirname, '..', 'config', 'config.env') })
 
 const app = express()
 
@@ -49,38 +46,67 @@ const corsOptions = Object.assign(
 app.use(cors(corsOptions))
 app.use(express.json())
 
-
 // Add OPTIONS handling for preflight requests
-app.options('*', cors(corsOptions));
+app.options('*', cors(corsOptions))
 
 // Debug middleware to log requests
 app.use((req, res, next) => {
-  console.log(`[API] ${req.method} ${req.url}`);
-  next();
-});
+  console.log(`[API] ${req.method} ${req.url}`)
+  next()
+})
 
-// Mount routes
-app.use('/api/v1/products', require('../routes/product'));
-app.use('/api/v1/orders', require('../routes/order'));
+// API routes first
+app.use('/api/v1/orders', require('../routes/order'))
+app.use('/api/v1/products', require('../routes/product'))
+
+// Static file handling with better error catching
+app.use(
+  express.static(path.join(__dirname, '../../frontend/public'), {
+    fallthrough: true,
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.json')) {
+        res.setHeader('Content-Type', 'application/json')
+      }
+    },
+  })
+)
+
+// URL decode middleware
+app.use((req, res, next) => {
+  if (req.path.includes('%PUBLIC_URL%')) {
+    const newPath = req.path.replace('%PUBLIC_URL%', '')
+    if (newPath.endsWith('favicon.ico')) {
+      res.sendFile(path.join(__dirname, 'public', 'favicon.ico'))
+    } else if (newPath.endsWith('manifest.json')) {
+      res.sendFile(path.join(__dirname, 'public', 'manifest.json'))
+    } else {
+      res.status(404).send('Not found')
+    }
+  } else {
+    next()
+  }
+})
 
 // Add health check endpoint
 app.get('/api/v1/health', (req, res) => {
   if (mongoose.connection.readyState === 1) {
-    res.status(200).json({ status: 'healthy', message: 'Server is running' });
+    res.status(200).json({ status: 'healthy', message: 'Server is running' })
   } else {
-    res.status(503).json({ status: 'unhealthy', message: 'Database connection issue' });
+    res
+      .status(503)
+      .json({ status: 'unhealthy', message: 'Database connection issue' })
   }
-});
+})
 
 // Improve error handling middleware
 app.use((err, req, res, next) => {
-  console.error('API Error:', err);
+  console.error('API Error:', err)
   res.status(err.statusCode || 500).json({
     success: false,
     message: err.message || 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err.stack : undefined
-  });
-});
+    error: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+  })
+})
 
 // API root route
 app.get('/api', (req, res) => {
@@ -89,8 +115,8 @@ app.get('/api', (req, res) => {
     message: 'HoloHenna API is running',
     endpoints: {
       products: '/api/v1/products',
-      orders: '/api/v1/orders'
-    }
+      orders: '/api/v1/orders',
+    },
   })
 })
 
@@ -98,13 +124,13 @@ app.get('/api', (req, res) => {
 app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'HoloHenna API is running'
+    message: 'HoloHenna API is running',
   })
 })
 
 // Handle React routing, return all requests to React app
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'))
+  res.sendFile(path.join(__dirname, '../../frontend/build/index.html'))
 })
 
 module.exports = app

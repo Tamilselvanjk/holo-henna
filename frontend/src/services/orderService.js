@@ -1,9 +1,13 @@
 const PROD_URL = 'https://holo-henna.onrender.com/api/v1';
-const DEV_URL = 'http://localhost:5000/api/v1'; // Changed from 3000 to 5000
+const DEV_URL = '/api/v1';
 
 class OrderService {
+  static getBaseUrl() {
+    return process.env.NODE_ENV === 'production' ? PROD_URL : DEV_URL;
+  }
+
   static async createOrder(orderData) {
-    let baseUrl = process.env.NODE_ENV === 'production' ? PROD_URL : DEV_URL;
+    let baseUrl = this.getBaseUrl();
     const maxRetries = 3;
     let attempt = 0;
 
@@ -35,6 +39,42 @@ class OrderService {
 
         if (attempt === maxRetries) throw error;
         await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      }
+    }
+  }
+
+  static async getOrder(orderId) {
+    const maxRetries = 2;
+    let attempt = 0;
+    let baseUrl = this.getBaseUrl();
+
+    while (attempt < maxRetries) {
+      try {
+        const response = await fetch(`${baseUrl}/orders/${orderId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch order: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (!data.success) {
+          throw new Error(data.message || 'Failed to fetch order');
+        }
+
+        return data;
+      } catch (error) {
+        attempt++;
+        if (baseUrl !== PROD_URL) {
+          baseUrl = PROD_URL;
+          continue;
+        }
+        throw error;
       }
     }
   }

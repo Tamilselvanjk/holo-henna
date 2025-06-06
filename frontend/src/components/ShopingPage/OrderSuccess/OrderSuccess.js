@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
+import { OrderService } from '../../../services/orderService'
+import { toast } from 'react-toastify'
 import './OrderSuccess.css'
 
 const OrderSuccess = () => {
@@ -11,19 +13,21 @@ const OrderSuccess = () => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await fetch(`/api/v1/orders/${orderId}`)
-        const data = await response.json()
+        const result = await OrderService.getOrder(orderId)
 
-        if (!data.success) {
-          throw new Error(data.message || 'Failed to fetch order')
+        if (!result.success) {
+          throw new Error(result.message || 'Failed to fetch order')
         }
 
-        setOrderDetails(data.data || data.order)
+        setOrderDetails(result.data || result.order)
       } catch (error) {
         console.error('Error fetching order:', error)
-        navigate('/orders', {
+        toast.error('Failed to load order details')
+
+        // Redirect to home with error state
+        navigate('/', {
           replace: true,
-          state: { error: 'Failed to load order details' },
+          state: { error: 'Order not found' },
         })
       } finally {
         setLoading(false)
