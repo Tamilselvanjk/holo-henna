@@ -1,5 +1,3 @@
-const BASE_URL = '/api/v1'
-
 const PaymentService = {
   processPayment: async (paymentData) => {
     try {
@@ -18,7 +16,7 @@ const PaymentService = {
 
   createOrder: async (orderData) => {
     try {
-      const response = await fetch('/api/v1/order/create', {
+      const response = await fetch('/api/v1/orders/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -85,6 +85,8 @@ class ProductService {
     const maxRetries = 3
     let attempt = 0
 
+    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
     while (attempt < maxRetries) {
       try {
         const response = await fetch(`${BASE_URL}/orders/create`, {
@@ -105,9 +107,13 @@ class ProductService {
         return data
       } catch (error) {
         attempt++
-        console.error(`Order creation attempt ${attempt} failed:`, error)
-        if (attempt === maxRetries) throw error
-        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt))
+        console.error(`Attempt ${attempt} failed:`, error)
+
+        if (attempt === maxRetries) {
+          throw error
+        }
+
+        await wait(1000 * attempt)
       }
     }
   }

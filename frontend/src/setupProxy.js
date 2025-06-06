@@ -1,80 +1,47 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
+const express = require('express');
 
 module.exports = function(app) {
-  const target = process.env.NODE_ENV === 'production'
-    ? 'https://holo-henna.onrender.com'
-    : 'http://localhost:3000'; // Changed from 3000 to 5000
+  // Static file handling first
+  app.use('/static', express.static(path.join(__dirname, '../public')));
+  app.use('/webimg', express.static(path.join(__dirname, '../public/webimg')));
 
   const proxyConfig = {
-    target,
+    target: 'http://localhost:5000',
     changeOrigin: true,
+    ws: false, // Disable WebSocket
     secure: false,
-    ws: true,
-    xfwd: true,
+    logLevel: 'debug',
     onError: (err, req, res) => {
-      // Handle connection errors
       if (err.code === 'ECONNREFUSED') {
-        const productionUrl = 'https://holo-henna.onrender.com';
-        // Redirect to production URL if local fails
-        res.redirect(`${productionUrl}${req.path}`);
-        return;
+        // Serve static files locally if backend is not available
+        if (req.path.match(/\.(jpg|png|svg|ico)$/)) {
+          try {
+            res.sendFile(path.join(__dirname, '../public', req.path));
+            return;
+          } catch (error) {
+            // Fall through to error response
+          }
+        }
       }
-      console.error('Proxy Error:', err);
       res.writeHead(500, {
         'Content-Type': 'application/json',
       });
-      res.end(JSON.stringify({ 
+      res.end(JSON.stringify({
         success: false,
-        message: 'Backend server is not available. Please try again later.',
+        message: 'Backend server is not available.',
         error: process.env.NODE_ENV === 'development' ? err.message : undefined
       }));
-    },
-    onProxyReq: (proxyReq, req, res) => {
-      if (req.method === 'GET') return;
-      if (req.body) {
-        const bodyData = JSON.stringify(req.body);
-        proxyReq.setHeader('Content-Type', 'application/json');
-        proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
-        proxyReq.write(bodyData);
-      }
     }
   };
-
-  // Static files handling
-  app.use('/webimg', (req, res, next) => {
-    try {
-      res.sendFile(path.join(__dirname, '../public/webimg', req.path));
-    } catch (error) {
-      next();
-    }
-  });
-
-  // Handle React static files locally first
-  app.use('/*.png', (req, res, next) => {
-    try {
-      res.sendFile(path.join(__dirname, '../public', req.path));
-    } catch (error) {
-      next();
-    }
-  });
 
   // API endpoints proxy
   app.use(
     '/api',
     createProxyMiddleware({
       ...proxyConfig,
-      pathRewrite: {
-        '^/api': '/api/v1'
-      },
-      onProxyReq: (proxyReq, req, res) => {
-        if (req.method === 'POST' && req.path.includes('/orders/create')) {
-          const bodyData = JSON.stringify(req.body);
-          proxyReq.setHeader('Content-Type', 'application/json');
-          proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
-          proxyReq.write(bodyData);
-        }
-      }
+      pathRewrite: { '^/api': '/api/v1' }
     })
   );
 
@@ -83,9 +50,7 @@ module.exports = function(app) {
     '/health',
     createProxyMiddleware({
       ...proxyConfig,
-      pathRewrite: {
-        '^/health': '/api/v1/health'
-      }
+      pathRewrite: { '^/health': '/api/v1/health' }
     })
   );
 };
