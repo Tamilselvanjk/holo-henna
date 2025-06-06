@@ -8,11 +8,16 @@ import Toast from '../Toast/Toast';
 import './Shop.css';
 
 const Shop = () => {
+  const [searchTerm, setSearchTerm] = useState('')
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [currentCategory, setCurrentCategory] = useState('All Products');
   const [cartTotal, setCartTotal] = useState(0);
+
+  const handleSearch = (term) => {
+    setSearchTerm(term)
+  }
 
   useEffect(() => {
     const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -52,31 +57,33 @@ const Shop = () => {
   return (
     <div className="shop-container">
       <HeroBanner />
-      <ShopHeader 
+      <ShopHeader
         cartCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
         onCartClick={() => setIsCartOpen(true)}
+        onSearch={handleSearch}
       />
-      <Categories 
-        onCategoryChange={category => setCurrentCategory(category)}
+      <Categories
+        onCategoryChange={(category) => setCurrentCategory(category)}
       />
       <ProductCards
         category={currentCategory}
         onAddToCart={handleAddToCart}
+        searchTerm={searchTerm}
       />
-      <Cart 
+      <Cart
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         items={cartItems}
         total={cartTotal}
         onUpdateQuantity={handleUpdateQuantity}
       />
-      <Toast 
+      <Toast
         show={showToast}
         message="Item added to cart!"
         onClose={() => setShowToast(false)}
       />
     </div>
-  );
+  )
 };
 
 export default Shop;
