@@ -34,14 +34,9 @@ module.exports = function (app) {
   }
 
   // Handle React routes that need direct access
-  app.get(['/order-success/*', '/orders/*'], (req, res) => {
-    if (req.url.includes('favicon.ico') || req.url.includes('manifest.json')) {
-      const cleanPath = req.url.replace(/%PUBLIC_URL%/g, '')
-      res.sendFile(path.join(__dirname, '../public', cleanPath))
-      return
-    }
-    res.sendFile(path.join(__dirname, '../public/index.html'))
-  })
+  app.get(['/login/*', '/profile/*', '/order-success/*', '/orders/*'], (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/index.html'));
+  });
 
   // Static files handling first
   app.use('/static', express.static(path.join(__dirname, '../public')))
