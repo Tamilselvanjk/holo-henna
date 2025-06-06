@@ -1,4 +1,8 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { signInWithPopup } from 'firebase/auth'
+import { auth, googleProvider } from '../../firebase/config'
+import { toast } from 'react-toastify'
 import {
   FaGoogle,
   FaEye,
@@ -6,30 +10,27 @@ import {
   FaWifi,
   FaExclamationTriangle,
 } from 'react-icons/fa'
-import { useAuth } from '../../context/AuthContext'
-import { toast } from 'react-toastify'
 
 import './Login.css'
 
 const Login = () => {
-  const { initiateGoogleLogin } = useAuth()
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   const handleGoogleLogin = async () => {
     try {
-      toast.info('Connecting to Google...', {
-        position: 'top-center',
-        autoClose: 2000,
-      })
-      await initiateGoogleLogin()
-      toast.success('Successfully logged in!', {
-        position: 'top-center',
-        autoClose: 3000,
-      })
+      setLoading(true)
+      const result = await signInWithPopup(auth, googleProvider)
+
+      if (result.user) {
+        toast.success('Successfully logged in!')
+        navigate(process.env.REACT_APP_AUTH_REDIRECT_URL || '/profile')
+      }
     } catch (error) {
-      toast.error('Login failed. Please try again.', {
-        position: 'top-center',
-        autoClose: 4000,
-      })
+      console.error('Login error:', error)
+      toast.error(error.message || 'Failed to sign in with Google')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -77,9 +78,10 @@ const Login = () => {
               type="button"
               className="google-btn"
               onClick={handleGoogleLogin}
+              disabled={loading}
             >
               <FaGoogle className="google-icon" />
-              Sign in with Google
+              {loading ? 'Connecting...' : 'Sign in with Google'}
             </button>
           </div>
           <div className="signup-text">
