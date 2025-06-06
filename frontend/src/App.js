@@ -19,15 +19,8 @@ import 'react-toastify/dist/ReactToastify.css'
 import './App.css'
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth()
-
-  if (loading) return null
-
-  return isAuthenticated ? (
-    children
-  ) : (
-    <Navigate to="/login" state={{ from: window.location.pathname }} />
-  )
+  const { isAuthenticated } = useAuth()
+  return isAuthenticated ? children : <Navigate to="/login" />
 }
 
 const App = () => {
