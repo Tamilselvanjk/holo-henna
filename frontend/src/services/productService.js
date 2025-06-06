@@ -8,6 +8,8 @@ class ProductService {
         category && category !== 'All Products' ? `?category=${category}` : ''
       }`
 
+      console.log('Fetching products from:', urlString) // Debug log
+
       const response = await fetch(urlString, {
         method: 'GET',
         headers: {
