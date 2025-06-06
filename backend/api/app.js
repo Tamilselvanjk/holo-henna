@@ -20,7 +20,11 @@ mongoose
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.React_App_Frontend_URL || 'http://localhost:3000',
+  origin: [
+    'http://localhost:3000',
+    'https://holo-henna-frontend.onrender.com',
+    'https://holo-henna.onrender.com',
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -28,7 +32,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 app.use(express.json())
-app.use(cors())
+
 // Debug middleware
 app.use((req, res, next) => {
 
