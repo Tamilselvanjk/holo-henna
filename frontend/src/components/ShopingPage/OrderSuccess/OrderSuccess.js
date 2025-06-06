@@ -11,6 +11,9 @@ const OrderSuccess = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    // Clear any existing toasts when entering order success page
+    toast.dismiss()
+
     const fetchOrderDetails = async () => {
       try {
         const result = await OrderService.getOrder(orderId)

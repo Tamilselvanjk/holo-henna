@@ -101,7 +101,10 @@ const PaymentForm = ({
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    const processingToast = toast.loading('Processing payment...')
+    const processingToast = toast.loading('Processing payment...', {
+      autoClose: false,
+      closeButton: false
+    })
 
     try {
       validatePayment(formData)
@@ -116,14 +119,7 @@ const PaymentForm = ({
 
       const orderData = {
         orderItems,
-        shippingAddress: {
-          name: shippingAddress.name,
-          street: shippingAddress.street,
-          city: shippingAddress.city,
-          state: shippingAddress.state,
-          pincode: shippingAddress.pincode,
-          mobile: shippingAddress.mobile
-        },
+        shippingAddress,
         totalAmount: Number(total),
         paymentMethod,
         paymentDetails: formData
@@ -137,15 +133,19 @@ const PaymentForm = ({
 
       const orderId = result.data?._id
       if (orderId) {
-        navigate(`/order-success/${orderId}`, { replace: true })
+        toast.dismiss(processingToast)
+        toast.success('Payment successful!', {
+          autoClose: 2000,
+          onClose: () => {
+            navigate(`/order-success/${orderId}`, { replace: true })
+          }
+        })
       }
     } catch (error) {
       console.error('Payment error:', error)
-      toast.update(processingToast, {
-        render: error.message || 'Payment failed. Please try again.',
-        type: 'error',
-        isLoading: false,
-        autoClose: 5000,
+      toast.dismiss(processingToast)
+      toast.error(error.message || 'Payment failed. Please try again.', {
+        autoClose: 3000
       })
     } finally {
       setLoading(false)

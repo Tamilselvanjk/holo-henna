@@ -59,17 +59,9 @@ app.use((req, res, next) => {
 app.use('/api/v1/orders', require('../routes/order'))
 app.use('/api/v1/products', require('../routes/product'))
 
-// Static file handling with better error catching
-app.use(
-  express.static(path.join(__dirname, '../../frontend/public'), {
-    fallthrough: true,
-    setHeaders: (res, filePath) => {
-      if (filePath.endsWith('.json')) {
-        res.setHeader('Content-Type', 'application/json')
-      }
-    },
-  })
-)
+// Serve frontend build
+app.use(express.static(path.join(__dirname, 'frontend', 'build')));
+
 
 // URL decode middleware
 app.use((req, res, next) => {
@@ -128,9 +120,9 @@ app.get('/', (req, res) => {
   })
 })
 
-// Handle React routing, return all requests to React app
+// Catch-all route to send index.html for React routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../frontend/build/index.html'))
-})
+  res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+});
 
 module.exports = app
