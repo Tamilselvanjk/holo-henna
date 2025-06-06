@@ -17,6 +17,7 @@ class ProductService {
           Accept: 'application/json',
         },
         credentials: 'include',
+        mode: 'cors',
       })
 
       if (!response.ok) {

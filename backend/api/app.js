@@ -20,25 +20,26 @@ mongoose
 
 // CORS configuration
 const corsOptions = {
-  origin: [
-    'http://localhost:3000',
-    'https://holo-henna-frontend.onrender.com',
-    'https://holo-henna.onrender.com',
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://holo-henna-frontend.onrender.com',
+      'https://holo-henna.onrender.com',
+    ]
+
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Access-Control-Allow-Origin'],
+  maxAge: 86400, // 24 hours
 }
-
-app.use(cors(corsOptions))
-app.use(express.json())
-
-// Debug middleware
-app.use((req, res, next) => {
-
-  next()
-})
-
 // Mount routes
 app.use('/api/v1/products', require('../routes/product'))
 app.use('/api/v1/orders', require('../routes/order'))
