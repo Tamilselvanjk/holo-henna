@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import {
   FaHands,
   FaChevronRight,
@@ -66,24 +67,32 @@ const Footer = () => {
           <h3 className="footer-title">Quick Links</h3>
           <ul className="footer-links">
             <li>
-              <a href="/">
+              <Link to="/">
                 <FaChevronRight className="icon" /> Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/gallery">
+              <Link to="/gallery">
                 <FaChevronRight className="icon" /> Gallery
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/shop">
+              <Link to="/shop">
                 <FaChevronRight className="icon" /> Shop
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#contact">
+              <Link
+                to="#contact"
+                onClick={(e) => {
+                  e.preventDefault()
+                  document.getElementById('contact').scrollIntoView({
+                    behavior: 'smooth',
+                  })
+                }}
+              >
                 <FaChevronRight className="icon" /> Contact
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
