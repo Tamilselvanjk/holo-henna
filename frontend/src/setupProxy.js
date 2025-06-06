@@ -6,10 +6,7 @@ module.exports = function (app) {
     createProxyMiddleware({
       target: 'http://localhost:5000',
       changeOrigin: true,
-      onProxyReq: function (proxyReq, req, res) {
-        // For debugging
-        console.log('Proxying:', req.method, req.path)
-      },
+      
       onError: function (err, req, res) {
         console.error('Proxy Error:', err)
         res.writeHead(500, {
