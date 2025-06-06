@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { OrderService } from '../../../services/orderService'
+import { toast } from 'react-toastify'
 import './OrdersPage.css'
 
 const OrdersPage = () => {
@@ -14,27 +16,20 @@ const OrdersPage = () => {
   const getOrders = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/v1/orders', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      const result = await OrderService.getAllOrders()
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to fetch orders')
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to fetch orders')
       }
 
-      if (data.success) {
-        const sortedOrders = (data.orders || []).sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )
-        setOrders(sortedOrders)
-      }
+      const sortedOrders = (result.orders || []).sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )
+      setOrders(sortedOrders)
     } catch (error) {
       console.error('Failed to fetch orders:', error)
+      toast.error('Unable to load orders')
+      setOrders([])
     } finally {
       setLoading(false)
     }

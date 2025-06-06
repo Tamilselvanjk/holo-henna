@@ -75,6 +75,44 @@ class OrderService {
       }
     }
   }
+
+  static async getAllOrders() {
+    let baseUrl = this.getBaseUrl();
+    const maxRetries = 3;
+    let attempt = 0;
+
+    while (attempt < maxRetries) {
+      try {
+        const response = await fetch(`${baseUrl}/orders`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch orders: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (!data.success) {
+          throw new Error(data.message || 'Failed to fetch orders');
+        }
+
+        return data;
+      } catch (error) {
+        attempt++;
+        if (baseUrl !== PROD_URL) {
+          baseUrl = PROD_URL;
+          continue;
+        }
+        if (attempt === maxRetries) throw error;
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      }
+    }
+  }
 }
 
 export { OrderService };

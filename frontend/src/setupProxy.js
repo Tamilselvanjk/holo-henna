@@ -91,6 +91,37 @@ module.exports = function (app) {
     })
   )
 
+  // Orders endpoint proxy with fallback
+  app.use(
+    '/api/v1/orders',
+    createProxyMiddleware({
+      ...proxyConfig,
+      onError: (err, req, res) => {
+        if (err.code === 'ECONNREFUSED') {
+          return res.redirect(
+            `https://holo-henna.onrender.com/api/v1/orders${req.url}`
+          )
+        }
+        res.writeHead(500, {
+          'Content-Type': 'application/json',
+        })
+        res.end(
+          JSON.stringify({
+            success: false,
+            message: 'Backend server is not available.',
+            error:
+              process.env.NODE_ENV === 'development' ? err.message : undefined,
+          })
+        )
+      },
+    })
+  )
+
+  // Handle React routes for orders
+  app.get(['/orders', '/orders/*'], (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/index.html'))
+  })
+
   // Health check endpoint
   app.use(
     '/health',
