@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { useCart } from '../../../context/CartContext'
 import './Cart.css'
 import DeliveryForm from '../DeliveryForm/DeliveryForm'
-import PaymentForm from './../PaymentForm/PaymentForm'
+import PaymentForm from '../PaymentForm/PaymentForm'
 import PaymentService from '../../../services/paymentService'
 import { toast } from 'react-toastify'
 
@@ -19,14 +19,12 @@ const Cart = ({ isOpen, onClose }) => {
     setCheckoutStep('payment')
   }
 
-  const handlePaymentComplete = async (paymentData) => {
+  const handlePaymentComplete = async () => {
     try {
-      // Clear cart after successful payment
-      clearCart()
-      onClose()
-      setCheckoutStep('cart')
-
-      toast.success('Order placed successfully! Your cart has been cleared.')
+      clearCart() // Clear the cart after successful payment
+      onClose() // Close the cart panel
+      setCheckoutStep('cart') // Reset to cart step
+      toast.success('Order placed successfully!')
     } catch (error) {
       console.error('Order error:', error)
       toast.error('Failed to complete order')
@@ -175,7 +173,7 @@ const Cart = ({ isOpen, onClose }) => {
             cartItems={cartItems}
             shippingAddress={deliveryData.shippingAddress}
             onBack={() => setCheckoutStep('delivery')}
-            onComplete={handlePaymentComplete}
+            onOrderComplete={handlePaymentComplete}
           />
         )}
       </div>

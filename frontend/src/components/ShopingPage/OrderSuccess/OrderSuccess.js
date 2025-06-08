@@ -16,6 +16,7 @@ const OrderSuccess = () => {
 
     const fetchOrderDetails = async () => {
       try {
+        setLoading(true)
         const result = await OrderService.getOrder(orderId)
 
         if (!result.success) {
@@ -23,15 +24,14 @@ const OrderSuccess = () => {
         }
 
         setOrderDetails(result.data || result.order)
+        toast.success('Payment completed successfully!', {
+          autoClose: 3000,
+          position: 'top-center',
+        })
       } catch (error) {
         console.error('Error fetching order:', error)
-        toast.error('Failed to load order details')
-
-        // Redirect to home with error state
-        navigate('/', {
-          replace: true,
-          state: { error: 'Order not found' },
-        })
+        toast.error('Error loading order details')
+        navigate('/', { replace: true })
       } finally {
         setLoading(false)
       }

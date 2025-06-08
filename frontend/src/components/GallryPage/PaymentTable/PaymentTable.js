@@ -5,11 +5,11 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faArrowRight,
   faCheck,
-  faXmark,
+  faMinus,
 } from '@fortawesome/free-solid-svg-icons'
 
 // Add icons to library
-library.add(faArrowRight, faCheck, faXmark)
+library.add(faArrowRight, faCheck, faMinus)
 
 const packageData = [
   { label: 'Price', property: 'price' },
@@ -154,11 +154,11 @@ const PackageTable = () => {
                       </span>
                     ) : (
                       <span
-                        className={pkg[row.property] ? 'checkIcon' : 'xIcon'}
-                        title={pkg[row.property] ? 'Included' : 'Not Included'}
+                        className={pkg[row.property] ? 'checkIcon' : 'dashIcon'}
+                        title={pkg[row.property] ? 'Included' : 'Not Available'}
                       >
                         <FontAwesomeIcon
-                          icon={pkg[row.property] ? faCheck : faXmark}
+                          icon={pkg[row.property] ? faCheck : faMinus}
                           className="icon-animation"
                         />
                       </span>
