@@ -11,48 +11,31 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Email is required'],
       trim: true,
-      lowercase: true,
     },
     phone: {
       type: String,
-      required: [true, 'Phone number is required'],
+      required: [true, 'Phone is required'],
       trim: true,
     },
     service: {
-      type: String,
-      required: [true, 'Service selection is required'],
-      enum: [
-        'full-bridal',
-        'elite-bridal',
-        'traditional',
-        'engagement',
-        'pre-wedding',
-        'party',
-        'custom-arabic',
-        'custom-minimal',
-        'custom-portrait',
-      ],
+      type: {
+        type: String,
+        required: true,
+      },
+      amount: {
+        type: Number,
+        required: true,
+      },
+      details: String,
     },
     bookingDate: {
       type: Date,
-      required: [true, 'Booking date is required'],
+      required: true,
     },
     status: {
       type: String,
+      enum: ['pending', 'confirmed', 'cancelled'],
       default: 'pending',
-      enum: ['pending', 'confirmed', 'completed', 'cancelled'],
-    },
-    amount: {
-      type: Number,
-      required: [true, 'Booking amount is required'],
-    },
-    notes: {
-      type: String,
-      trim: true,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now,
     },
   },
   {

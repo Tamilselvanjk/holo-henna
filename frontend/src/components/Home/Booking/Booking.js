@@ -106,40 +106,21 @@ const Booking = () => {
             .flatMap(group => group.options)
             .find(option => option.value === formData.service)?.label || ''
         },
-        customServiceDetail: formData.customServiceDetail,
-        bookingDate: new Date().toISOString(),
-        status: 'pending'
+        bookingDate: new Date().toISOString()
       }
 
-      console.log('Sending booking request:', bookingData)
-
-      const response = await fetch('https://holo-henna-frontend.onrender.com/api/v1/booking', {
+      const response = await fetch('/api/v1/bookings', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(bookingData),
-        credentials: 'include'
+        body: JSON.stringify(bookingData)
       })
 
-      const responseText = await response.text()
-      console.log('Raw response:', responseText)
-
-      let data
-      try {
-        data = responseText ? JSON.parse(responseText) : null
-      } catch (parseError) {
-        console.error('JSON parse error:', parseError)
-        throw new Error('Server response was not in JSON format')
-      }
+      const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data?.message || `HTTP error! status: ${response.status}`)
-      }
-
-      if (!data || !data.success) {
-        throw new Error(data?.message || 'Booking submission failed')
+        throw new Error(data.message || 'Failed to create booking')
       }
 
       toast.success('Booking submitted successfully!')
@@ -153,7 +134,7 @@ const Booking = () => {
 
     } catch (error) {
       console.error('Booking error:', error)
-      toast.error(error.message || 'Failed to submit booking. Please try again.')
+      toast.error(error.message || 'Failed to submit booking')
     } finally {
       setLoading(false)
     }

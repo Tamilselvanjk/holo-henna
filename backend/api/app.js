@@ -8,7 +8,7 @@ const cors = require('cors')
 dotenv.config({ path: path.join(__dirname, '..', 'config', 'config.env') })
 
 const app = express()
-
+z
 // Connect MongoDB
 mongoose
   .connect(process.env.DB_URL)
@@ -18,36 +18,28 @@ mongoose
     process.exit(1)
   })
 
-// CORS configuration
-const corsOptions = Object.assign(
-  {},
-  {
-    origin: function (origin, callback) {
-      const allowedOrigins = [
-        'http://localhost:3000',
-        'https://holo-henna-frontend.onrender.com',
-        'https://holo-henna.onrender.com',
-      ]
-
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    exposedHeaders: ['Access-Control-Allow-Origin'],
-    maxAge: 86400,
-  }
-)
+// Update CORS configuration
+const corsOptions = {
+  origin: ['http://localhost:3000', 'https://holo-henna-frontend.onrender.com'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
+  credentials: true,
+  maxAge: 86400,
+}
 
 app.use(cors(corsOptions))
-app.use(express.json())
 
-// Add OPTIONS handling for preflight requests
+// Add preflight handler for all routes
 app.options('*', cors(corsOptions))
+
+// Add headers middleware
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin)
+  res.header('Access-Control-Allow-Credentials', true)
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization')
+  next()
+})
 
 // Debug middleware to log requests
 app.use((req, res, next) => {
@@ -61,7 +53,7 @@ app.use('/api/v1/products', require('../routes/product'))
 app.use('/api/v1/bookings', require('../routes/booking')) // Add booking routes
 
 // Serve frontend build
-app.use(express.static(path.join(__dirname, 'frontend', 'build')));
+app.use(express.static(path.join(__dirname, 'frontend', 'build')))
 
 
 // URL decode middleware

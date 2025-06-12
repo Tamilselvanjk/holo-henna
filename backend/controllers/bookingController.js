@@ -2,28 +2,20 @@ const Booking = require('../models/bookingModel')
 
 exports.createBooking = async (req, res) => {
   try {
-    const { fullName, email, phone, service, bookingDate, amount } = req.body
-
-    // Validate required fields
-    if (!fullName || !email || !phone || !service) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide all required fields',
-      })
+    const bookingData = {
+      fullName: req.body.fullName,
+      email: req.body.email,
+      phone: req.body.phone,
+      service: {
+        type: req.body.service.type,
+        amount: req.body.service.amount,
+        details: req.body.service.details,
+      },
+      bookingDate: req.body.bookingDate,
     }
 
-    // Create booking
-    const booking = await Booking.create({
-      fullName,
-      email,
-      phone,
-      service,
-      bookingDate: new Date(bookingDate),
-      amount,
-      status: 'pending',
-    })
+    const booking = await Booking.create(bookingData)
 
-    // Send success response
     res.status(201).json({
       success: true,
       message: 'Booking created successfully',
@@ -31,19 +23,20 @@ exports.createBooking = async (req, res) => {
     })
   } catch (error) {
     console.error('Booking creation error:', error)
-    res.status(500).json({
+    res.status(400).json({
       success: false,
-      message: error.message || 'Error creating booking',
+      message: error.message || 'Failed to create booking',
+      error: process.env.NODE_ENV === 'development' ? error : undefined,
     })
   }
 }
 
-exports.getBookings = async (req, res) => {
+exports.getAllBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find().sort({ bookingDate: -1 })
-
+    const bookings = await Booking.find().sort({ createdAt: -1 })
     res.status(200).json({
       success: true,
+      count: bookings.length,
       data: bookings,
     })
   } catch (error) {
