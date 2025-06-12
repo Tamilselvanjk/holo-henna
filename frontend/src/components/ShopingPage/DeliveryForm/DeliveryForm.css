@@ -12,6 +12,13 @@
   padding: 20px;
 }
 
+.address-input-form,
+.delivery-details-form {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
 .form-group {
   margin-bottom: 15px;
 }
@@ -23,9 +30,11 @@
   font-weight: 500;
 }
 
-.form-group input {
+.form-group input,
+.form-group select,
+.form-group textarea {
   width: 100%;
-  padding: 8px 12px;
+  padding: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
@@ -33,11 +42,12 @@
 
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 15px;
 }
 
-.form-buttons {
+.button-group {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
@@ -283,7 +293,7 @@
 
 .default-badge {
   background: #e8f5e9;
-  
+
   color: #2e7d32;
   padding: 2px 8px;
   border-radius: 4px;
@@ -293,7 +303,6 @@
 
 .address-selector {
   position: relative;
-  
 }
 
 .selected-address {
@@ -455,4 +464,10 @@
   margin-bottom: 20px;
   border-top: 1px solid #eee;
   z-index: 10;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 }

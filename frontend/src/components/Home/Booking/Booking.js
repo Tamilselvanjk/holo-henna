@@ -16,23 +16,47 @@ const serviceOptions = [
         label: 'Elite Bridal Design with Portraits',
         price: '₹18,000',
       },
-      { value: 'traditional', label: 'Traditional Wedding Design', price: '₹10,000' },
+      {
+        value: 'traditional',
+        label: 'Traditional Wedding Design',
+        price: '₹10,000',
+      },
     ],
   },
   {
     group: 'Special Occasions',
     options: [
-      { value: 'engagement', label: 'Engagement Ceremony Special', price: '₹8,000' },
-      { value: 'pre-wedding', label: 'Pre-Wedding Celebration', price: '₹6,000' },
+      {
+        value: 'engagement',
+        label: 'Engagement Ceremony Special',
+        price: '₹8,000',
+      },
+      {
+        value: 'pre-wedding',
+        label: 'Pre-Wedding Celebration',
+        price: '₹6,000',
+      },
       { value: 'party', label: 'Party Design Package', price: '₹5,000' },
     ],
   },
   {
     group: 'Custom Designs',
     options: [
-      { value: 'custom-arabic', label: 'Custom Arabic Fusion', price: 'Custom' },
-      { value: 'custom-minimal', label: 'Minimalist Modern Design', price: 'Custom' },
-      { value: 'custom-portrait', label: 'Portrait & Story Design', price: 'Custom' },
+      {
+        value: 'custom-arabic',
+        label: 'Custom Arabic Fusion',
+        price: 'Custom',
+      },
+      {
+        value: 'custom-minimal',
+        label: 'Minimalist Modern Design',
+        price: 'Custom',
+      },
+      {
+        value: 'custom-portrait',
+        label: 'Portrait & Story Design',
+        price: 'Custom',
+      },
     ],
   },
 ]
@@ -96,7 +120,9 @@ const Booking = () => {
       }
     } catch (error) {
       console.error('Booking error:', error)
-      toast.error(error.message || 'Failed to submit booking. Please try again.')
+      toast.error(
+        error.message || 'Failed to submit booking. Please try again.'
+      )
     }
   }
 
@@ -104,10 +130,10 @@ const Booking = () => {
     const servicePrices = {
       'full-bridal': 25000,
       'elite-bridal': 18000,
-      'traditional': 10000,
-      'engagement': 8000,
+      traditional: 10000,
+      engagement: 8000,
       'pre-wedding': 6000,
-      'party': 5000,
+      party: 5000,
       'custom-arabic': 15000,
       'custom-minimal': 12000,
       'custom-portrait': 20000,

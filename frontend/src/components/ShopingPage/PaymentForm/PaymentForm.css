@@ -4,7 +4,8 @@
   padding: 1.5rem 2rem;
   background: linear-gradient(120deg, #f5f7fa 0%, #c3cfe2 100%);
   border-radius: 2rem;
-  box-shadow: 0 12px 36px rgba(44, 62, 80, 0.13), 0 1.5px 6px rgba(44, 62, 80, 0.08);
+  box-shadow: 0 12px 36px rgba(44, 62, 80, 0.13),
+    0 1.5px 6px rgba(44, 62, 80, 0.08);
   position: relative;
   overflow: hidden;
 }
@@ -23,13 +24,12 @@
 }
 
 .payment-form h3 {
-
   font-size: 2.2rem;
   font-weight: 800;
   text-align: center;
   margin-bottom: 2.2rem;
   background: linear-gradient(135deg, #8295bf, #00237a);
- 
+
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: 1px;
@@ -56,10 +56,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, 
-    rgba(255,255,255,0.1) 0%,
-    rgba(255,255,255,0.05) 50%,
-    rgba(255,255,255,0) 100%);
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
   pointer-events: none;
 }
 
@@ -237,7 +239,8 @@
     padding: 1.2rem 0.5rem;
     border-radius: 1.2rem;
   }
-  .payment-summary, .razorpay-section {
+  .payment-summary,
+  .razorpay-section {
     padding: 1rem 0.5rem;
     border-radius: 0.8rem;
   }

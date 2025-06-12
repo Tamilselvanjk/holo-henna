@@ -77,9 +77,7 @@
   background: linear-gradient(145deg, #ffffff, #f5f5f5);
   border-radius: 25px;
   padding: 3rem;
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(10px);
   transform: translateZ(0);
   transition: all 0.4s ease;
@@ -87,9 +85,7 @@
 
 .contact-form:hover {
   transform: translateY(-5px);
-  box-shadow: 
-    0 25px 50px rgba(0, 0, 0, 0.15),
-    0 0 0 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15), 0 0 0 2px rgba(0, 0, 0, 0.1);
 }
 
 .form-header {
@@ -238,9 +234,7 @@ option:hover {
 .submit-btn:hover {
   transform: translateY(-3px) scale(1.02);
   background: linear-gradient(135deg, #444, #555);
-  box-shadow: 
-    0 15px 30px rgba(0, 0, 0, 0.2),
-    0 8px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2), 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .submit-btn:active {
@@ -265,18 +259,33 @@ option:hover {
 }
 
 @keyframes shine {
-  0% { left: -100%; }
-  20%, 100% { left: 100%; }
+  0% {
+    left: -100%;
+  }
+  20%,
+  100% {
+    left: 100%;
+  }
 }
 
 @keyframes arrowMove {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(5px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(5px);
+  }
 }
 
 @keyframes floatIcon {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 @media (max-width: 768px) {

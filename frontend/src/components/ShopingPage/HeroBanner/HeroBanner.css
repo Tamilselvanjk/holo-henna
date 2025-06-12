@@ -69,12 +69,10 @@
   overflow: hidden;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 
-    0 10px 25px rgba(32, 32, 32, 0.3),
+  box-shadow: 0 10px 25px rgba(32, 32, 32, 0.3),
     0 6px 12px rgba(47, 47, 46, 0.2);
   z-index: 1;
 }
-
 
 .shop-now-btn::before {
   content: '';
@@ -94,8 +92,7 @@
 
 .shop-now-btn:active {
   transform: translateY(-1px);
-  box-shadow: 
-    0 5px 15px rgba(139, 90, 43, 0.3),
+  box-shadow: 0 5px 15px rgba(139, 90, 43, 0.3),
     0 3px 8px rgba(139, 90, 43, 0.2);
 }
 
@@ -107,30 +104,46 @@
 }
 
 @keyframes shine {
-  0% { left: -100%; }
-  20%, 100% { left: 100%; }
+  0% {
+    left: -100%;
+  }
+  20%,
+  100% {
+    left: 100%;
+  }
 }
 
 @keyframes gradientShift {
-  0% { background-color: rgba(0, 0, 0, 0.5); }
-  50% { background-color: rgba(0, 0, 0, 0.7); }
-  100% { background-color: rgba(0, 0, 0, 0.5); }
+  0% {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
 }
 
 @keyframes arrowBounce {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(8px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(8px);
+  }
 }
 
 @media (max-width: 768px) {
   .hero-banner h1 {
     font-size: 2.5rem;
   }
-  
+
   .hero-banner p {
     font-size: 1.1rem;
   }
-  
+
   .shop-now-btn {
     padding: 0.875rem 2rem;
     font-size: 1rem;

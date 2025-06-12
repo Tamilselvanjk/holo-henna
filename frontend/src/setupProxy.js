@@ -34,9 +34,12 @@ module.exports = function (app) {
   }
 
   // Handle React routes that need direct access
-  app.get(['/login', '/profile', '/order-success/*', '/orders/*'], (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/index.html'));
-  });
+  app.get(
+    ['/login', '/profile', '/order-success/*', '/orders/*'],
+    (req, res) => {
+      res.sendFile(path.join(__dirname, '../public/index.html'))
+    }
+  )
 
   // Static files handling first
   app.use('/static', express.static(path.join(__dirname, '../public')))

@@ -5,14 +5,20 @@ import { initializeRazorpay } from '../../../services/razorpayService'
 import './PaymentForm.css'
 import { useNavigate } from 'react-router-dom'
 
-const PaymentForm = ({ total = 0, onBack, cartItems = [], shippingAddress = {}, onOrderComplete }) => {
+const PaymentForm = ({
+  total = 0,
+  onBack,
+  cartItems = [],
+  shippingAddress = {},
+  onOrderComplete,
+}) => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
   const handleRazorpayPayment = async () => {
     setLoading(true)
     const processingToast = toast.loading('Initializing payment...', {
-      position: 'top-center'
+      position: 'top-center',
     })
 
     try {
@@ -20,7 +26,7 @@ const PaymentForm = ({ total = 0, onBack, cartItems = [], shippingAddress = {}, 
         throw new Error('No items in cart')
       }
 
-      const orderItems = cartItems.map(item => ({
+      const orderItems = cartItems.map((item) => ({
         product: item._id,
         quantity: Number(item.quantity || 1),
         price: Number(item.price || 0),
@@ -30,20 +36,20 @@ const PaymentForm = ({ total = 0, onBack, cartItems = [], shippingAddress = {}, 
         orderItems,
         shippingAddress,
         totalAmount: Number(total),
-        paymentMethod: 'razorpay'
+        paymentMethod: 'razorpay',
       }
 
       const paymentResult = await initializeRazorpay(total, {
         prefill: {
           name: shippingAddress.name,
           email: shippingAddress.email,
-          contact: shippingAddress.mobile
+          contact: shippingAddress.mobile,
         },
         notes: {
           order_type: 'mehndi_service',
-          shipping_address: JSON.stringify(shippingAddress)
+          shipping_address: JSON.stringify(shippingAddress),
         },
-        order_data: orderData
+        order_data: orderData,
       })
 
       if (paymentResult?.success) {
@@ -51,8 +57,8 @@ const PaymentForm = ({ total = 0, onBack, cartItems = [], shippingAddress = {}, 
           ...orderData,
           paymentDetails: {
             razorpay_payment_id: paymentResult.razorpay_payment_id,
-            razorpay_order_id: paymentResult.razorpay_order_id
-          }
+            razorpay_order_id: paymentResult.razorpay_order_id,
+          },
         })
 
         if (result.success) {
@@ -84,7 +90,7 @@ const PaymentForm = ({ total = 0, onBack, cartItems = [], shippingAddress = {}, 
 
       <div className="payment-options">
         <div className="razorpay-section">
-          <button 
+          <button
             className="razorpay-button"
             onClick={handleRazorpayPayment}
             disabled={loading}
@@ -96,12 +102,12 @@ const PaymentForm = ({ total = 0, onBack, cartItems = [], shippingAddress = {}, 
               </div>
             ) : (
               <div className="button-content">
-                <img 
-                  src="/webimg/razorpay-icon.png" 
+                <img
+                  src="/webimg/razorpay-icon.png"
                   alt="Razorpay"
                   onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "https://razorpay.com/favicon.png";
+                    e.target.onerror = null
+                    e.target.src = 'https://razorpay.com/favicon.png'
                   }}
                   className="razorpay-logo"
                 />
@@ -116,8 +122,8 @@ const PaymentForm = ({ total = 0, onBack, cartItems = [], shippingAddress = {}, 
       </div>
 
       <div className="button-group">
-        <button 
-          type="button" 
+        <button
+          type="button"
           className="back-btn"
           onClick={onBack}
           disabled={loading}

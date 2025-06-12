@@ -40,6 +40,13 @@ const DeliveryForm = ({
     },
   ])
   const [error, setError] = useState('')
+  const [showAddressForm, setShowAddressForm] = useState(addresses.length === 0)
+  const [showDeliveryDetails, setShowDeliveryDetails] = useState(false)
+  const [deliveryDetails, setDeliveryDetails] = useState({
+    date: '',
+    timeSlot: '',
+    instructions: '',
+  })
 
   useEffect(() => {
     // Set default address as selected initially
@@ -90,6 +97,7 @@ const DeliveryForm = ({
     try {
       onNext({
         shippingAddress,
+        deliveryDetails,
         orderItems: cartItems.map((item) => ({
           productId: item._id,
           quantity: item.quantity,
@@ -185,11 +193,56 @@ const DeliveryForm = ({
     setError('') // Clear any existing errors
   }
 
+  const handleNewAddressSubmit = (formData) => {
+    const newAddress = {
+      id: Math.max(...addresses.map((a) => a.id), 0) + 1,
+      name: formData.name,
+      type: 'HOME',
+      lines: [
+        formData.street,
+        formData.area,
+        formData.city,
+        `${formData.city}, ${formData.state} ${formData.pincode}`,
+      ],
+      mobile: formData.mobile,
+      isDefault: addresses.length === 0,
+    }
+
+    setAddresses((prev) => [...prev, newAddress])
+    setSelectedAddressId(newAddress.id)
+    setShowAddressForm(false)
+    setShowDeliveryDetails(true)
+  }
+
+  const handleDeliveryDetailsSubmit = (details) => {
+    setDeliveryDetails(details)
+    handleConfirm()
+  }
+
   const defaultAddresses = addresses.filter((addr) => addr.isDefault)
   const otherAddresses = addresses.filter((addr) => !addr.isDefault)
 
   const handleAddNewAddress = () => {
     setShowAddressDialog(true)
+  }
+
+  if (showAddressForm) {
+    return (
+      <div className="delivery-form-container">
+        <AddressInputForm onSubmit={handleNewAddressSubmit} />
+      </div>
+    )
+  }
+
+  if (showDeliveryDetails) {
+    return (
+      <div className="delivery-form-container">
+        <DeliveryDetailsForm
+          onSubmit={handleDeliveryDetailsSubmit}
+          onBack={() => setShowDeliveryDetails(false)}
+        />
+      </div>
+    )
   }
 
   return (
@@ -335,6 +388,151 @@ const AddressCard = ({
         )}
       </div>
     </div>
+  )
+}
+
+const AddressInputForm = ({ onSubmit }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    street: '',
+    area: '',
+    city: '',
+    state: '',
+    pincode: '',
+    mobile: '',
+  })
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    onSubmit(formData)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="address-input-form">
+      <h2>Add Delivery Address</h2>
+      <div className="form-group">
+        <input
+          type="text"
+          placeholder="Full Name"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          required
+        />
+      </div>
+      <div className="form-group">
+        <input
+          type="text"
+          placeholder="Street Address"
+          value={formData.street}
+          onChange={(e) => setFormData({ ...formData, street: e.target.value })}
+          required
+        />
+      </div>
+      <div className="form-group">
+        <input
+          type="text"
+          placeholder="Area/Locality"
+          value={formData.area}
+          onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+          required
+        />
+      </div>
+      <div className="form-row">
+        <input
+          type="text"
+          placeholder="City"
+          value={formData.city}
+          onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+          required
+        />
+        <input
+          type="text"
+          placeholder="State"
+          value={formData.state}
+          onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+          required
+        />
+        <input
+          type="text"
+          placeholder="PIN Code"
+          value={formData.pincode}
+          onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+          required
+          pattern="\d{6}"
+        />
+      </div>
+      <div className="form-group">
+        <input
+          type="tel"
+          placeholder="Mobile Number"
+          value={formData.mobile}
+          onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+          required
+          pattern="\d{10}"
+        />
+      </div>
+      <button type="submit" className="submit-btn">
+        Continue to Delivery Details
+      </button>
+    </form>
+  )
+}
+
+const DeliveryDetailsForm = ({ onSubmit, onBack }) => {
+  const [details, setDetails] = useState({
+    date: '',
+    timeSlot: '',
+    instructions: '',
+  })
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    onSubmit(details)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="delivery-details-form">
+      <h2>Delivery Details</h2>
+      <div className="form-group">
+        <label>Delivery Date</label>
+        <input
+          type="date"
+          value={details.date}
+          onChange={(e) => setDetails({ ...details, date: e.target.value })}
+          required
+          min={new Date().toISOString().split('T')[0]}
+        />
+      </div>
+      <div className="form-group">
+        <label>Time Slot</label>
+        <select
+          value={details.timeSlot}
+          onChange={(e) => setDetails({ ...details, timeSlot: e.target.value })}
+          required
+        >
+          <option value="">Select Time Slot</option>
+          <option value="morning">Morning (9 AM - 12 PM)</option>
+          <option value="afternoon">Afternoon (12 PM - 3 PM)</option>
+          <option value="evening">Evening (3 PM - 6 PM)</option>
+        </select>
+      </div>
+      <div className="form-group">
+        <label>Special Instructions (Optional)</label>
+        <textarea
+          value={details.instructions}
+          onChange={(e) => setDetails({ ...details, instructions: e.target.value })}
+          placeholder="Any special instructions for delivery"
+        />
+      </div>
+      <div className="button-group">
+        <button type="button" onClick={onBack} className="back-btn">
+          <i className="fas fa-arrow-left"></i> Back
+        </button>
+        <button type="submit" className="confirm-btn">
+          Continue to Payment <i className="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </form>
   )
 }
 
