@@ -70,6 +70,7 @@ const Booking = () => {
     service: '',
     customServiceDetail: '',
   })
+  const [loading, setLoading] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -86,73 +87,75 @@ const Booking = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     
-    // Validate form data before submission
     if (!formData.fullName || !formData.email || !formData.phone || !formData.service) {
       toast.error('Please fill all required fields')
       return
     }
 
+    setLoading(true)
+
     try {
-      // Format the request data
       const bookingData = {
         fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone,
-        service: formData.service,
+        service: {
+          type: formData.service,
+          amount: getServiceAmount(formData.service),
+          details: serviceOptions
+            .flatMap(group => group.options)
+            .find(option => option.value === formData.service)?.label || ''
+        },
         customServiceDetail: formData.customServiceDetail,
         bookingDate: new Date().toISOString(),
-        status: 'pending',
-        amount: getServiceAmount(formData.service)
+        status: 'pending'
       }
 
-      console.log('Sending booking data:', bookingData)
+      console.log('Sending booking request:', bookingData)
 
       const response = await fetch('https://holo-henna-frontend.onrender.com/api/v1/booking', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          'Accept': 'application/json'
         },
         body: JSON.stringify(bookingData),
-        credentials: 'include' // Include credentials if using sessions
+        credentials: 'include'
       })
 
-      // Log the raw response for debugging
-      console.log('Response status:', response.status)
-      
-      // Get response text first
       const responseText = await response.text()
-      console.log('Response text:', responseText)
+      console.log('Raw response:', responseText)
 
-      // Try to parse JSON only if there's content
       let data
       try {
         data = responseText ? JSON.parse(responseText) : null
       } catch (parseError) {
         console.error('JSON parse error:', parseError)
-        throw new Error('Invalid response format from server')
+        throw new Error('Server response was not in JSON format')
       }
 
       if (!response.ok) {
-        throw new Error(data?.message || 'Failed to submit booking')
+        throw new Error(data?.message || `HTTP error! status: ${response.status}`)
       }
 
-      if (data?.success) {
-        toast.success('Booking submitted successfully!')
-        // Reset form
-        setFormData({
-          fullName: '',
-          email: '',
-          phone: '',
-          service: '',
-          customServiceDetail: ''
-        })
-      } else {
+      if (!data || !data.success) {
         throw new Error(data?.message || 'Booking submission failed')
       }
+
+      toast.success('Booking submitted successfully!')
+      setFormData({
+        fullName: '',
+        email: '',
+        phone: '',
+        service: '',
+        customServiceDetail: ''
+      })
+
     } catch (error) {
       console.error('Booking error:', error)
       toast.error(error.message || 'Failed to submit booking. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -287,9 +290,13 @@ const Booking = () => {
                 </select>
               </div>
 
-              <button type="submit" className="submit-btn">
-                <span>Book Appointment</span>
-                <i className="fas fa-arrow-right"></i>
+              <button 
+                type="submit" 
+                className="submit-btn" 
+                disabled={loading}
+              >
+                <span>{loading ? 'Submitting...' : 'Book Appointment'}</span>
+                {!loading && <i className="fas fa-arrow-right"></i>}
               </button>
             </form>
           </div>
