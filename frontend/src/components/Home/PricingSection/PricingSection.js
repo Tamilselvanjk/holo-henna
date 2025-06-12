@@ -6,7 +6,7 @@ const PricingSection = () => {
     {
       title: 'HOURLY PRICING',
       subtitle: 'Free Hand Designing',
-      price: '₹ 4,000',
+      price: '₹ 1,000',
       period: 'per month',
       features: [
         'Suitable for Mehndi events where more than 10 people',
@@ -17,7 +17,7 @@ const PricingSection = () => {
     {
       title: 'BRIDAL PACKAGES',
       subtitle: 'Customized Designing',
-      price: '₹ 6,000',
+      price: '₹ 2,000',
       period: 'per month',
       isPopular: true,
       features: [

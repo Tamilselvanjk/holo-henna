@@ -58,6 +58,7 @@ app.use((req, res, next) => {
 // API routes first
 app.use('/api/v1/orders', require('../routes/order'))
 app.use('/api/v1/products', require('../routes/product'))
+app.use('/api/v1/bookings', require('../routes/booking')) // Add booking routes
 
 // Serve frontend build
 app.use(express.static(path.join(__dirname, 'frontend', 'build')));

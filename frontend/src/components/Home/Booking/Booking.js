@@ -1,5 +1,41 @@
 import React, { useState } from 'react'
 import './Booking.css'
+import { toast } from 'react-toastify'
+
+const serviceOptions = [
+  {
+    group: 'Bridal Collection',
+    options: [
+      {
+        value: 'full-bridal',
+        label: 'Full Bridal Package (Hands & Feet)',
+        price: '₹25,000',
+      },
+      {
+        value: 'elite-bridal',
+        label: 'Elite Bridal Design with Portraits',
+        price: '₹18,000',
+      },
+      { value: 'traditional', label: 'Traditional Wedding Design', price: '₹10,000' },
+    ],
+  },
+  {
+    group: 'Special Occasions',
+    options: [
+      { value: 'engagement', label: 'Engagement Ceremony Special', price: '₹8,000' },
+      { value: 'pre-wedding', label: 'Pre-Wedding Celebration', price: '₹6,000' },
+      { value: 'party', label: 'Party Design Package', price: '₹5,000' },
+    ],
+  },
+  {
+    group: 'Custom Designs',
+    options: [
+      { value: 'custom-arabic', label: 'Custom Arabic Fusion', price: 'Custom' },
+      { value: 'custom-minimal', label: 'Minimalist Modern Design', price: 'Custom' },
+      { value: 'custom-portrait', label: 'Portrait & Story Design', price: 'Custom' },
+    ],
+  },
+]
 
 const Booking = () => {
   const [showCustomInput, setShowCustomInput] = useState(false)
@@ -23,9 +59,60 @@ const Booking = () => {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log(formData)
+    try {
+      const response = await fetch('/api/v1/bookings/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          bookingDate: new Date().toISOString(),
+          status: 'pending',
+          amount: getServiceAmount(formData.service),
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Failed to submit booking')
+      }
+
+      const data = await response.json()
+
+      if (data.success) {
+        toast.success('Booking submitted successfully!')
+        setFormData({
+          fullName: '',
+          email: '',
+          phone: '',
+          service: '',
+          customServiceDetail: '',
+        })
+      } else {
+        throw new Error(data.message || 'Failed to submit booking')
+      }
+    } catch (error) {
+      console.error('Booking error:', error)
+      toast.error(error.message || 'Failed to submit booking. Please try again.')
+    }
+  }
+
+  const getServiceAmount = (service) => {
+    const servicePrices = {
+      'full-bridal': 25000,
+      'elite-bridal': 18000,
+      'traditional': 10000,
+      'engagement': 8000,
+      'pre-wedding': 6000,
+      'party': 5000,
+      'custom-arabic': 15000,
+      'custom-minimal': 12000,
+      'custom-portrait': 20000,
+    }
+    return servicePrices[service] || 0
   }
 
   return (
@@ -34,11 +121,10 @@ const Booking = () => {
       <div className="section-content">
         <div className="section-title">
           <span className="contact-label">CONTACT US</span>
-          <h1>
-            Get In Touch With
-            <br />
-            Our Mehndi Experts
-          </h1>
+          <h1>Transform Your Special Day</h1>
+          <p className="title-description">
+            Experience the art of traditional and modern mehndi designs
+          </p>
         </div>
 
         <div className="section-container">
@@ -56,44 +142,59 @@ const Booking = () => {
             <div className="map-info">
               <div className="map-address">Holo Henna Art</div>
               <div className="map-details">
-                HSR Layout, Sector 3<br />
+                HSR Layout, Sector 3
+                <br />
                 Bengaluru, Karnataka 560102
               </div>
             </div>
           </div>
 
           <div className="contact-form">
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label className="form-label">Full Name</label>
-                <input
-                  type="text"
-                  name="fullName"
-                  className="form-control"
-                  placeholder="Your Name"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  required
-                />
+            <div className="form-header">
+              <i className="fas fa-mandala"></i>
+              <h3>Book Your Appointment</h3>
+            </div>
+
+            <form onSubmit={handleSubmit} className="booking-form">
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">
+                    <i className="fas fa-user"></i>
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    name="fullName"
+                    className="form-control"
+                    placeholder="Your Name"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">
+                    <i className="fas fa-phone"></i>
+                    Phone
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    className="form-control"
+                    placeholder="Your Phone Number"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
               </div>
 
               <div className="form-group">
-                <label className="form-label">Phone</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  className="form-control"
-                  placeholder="Your Phone Number"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  pattern="[0-9]{10}"
-                  title="Please enter a valid 10-digit phone number"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Email Address</label>
+                <label className="form-label">
+                  <i className="fas fa-envelope"></i>
+                  Email Address
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -105,60 +206,34 @@ const Booking = () => {
                 />
               </div>
 
-              <div className="form-group service-group">
-                <label htmlFor="service" className="form-label">
-                  Select Your Service Type
+              <div className="form-group service-selection">
+                <label className="form-label">
+                  <i className="fas fa-paint-brush"></i>
+                  Select Service
                 </label>
-                <div className="select-wrapper">
-                  <select
-                    id="service"
-                    name="service"
-                    className="form-control service-select"
-                    value={formData.service}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="" disabled>
-                      Select a mehndi service...
-                    </option>
-                    <optgroup label="Wedding Services">
-                      <option value="bridal">
-                        Bridal Mehndi Design (Traditional & Modern)
-                      </option>
-                      <option value="engagement">
-                        Engagement Ceremony Mehndi
-                      </option>
-                      <option value="sangeet">Sangeet Ceremony Mehndi</option>
+                <select
+                  name="service"
+                  className="form-control service-select"
+                  value={formData.service}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Choose your design package...</option>
+                  {serviceOptions.map((group, index) => (
+                    <optgroup key={index} label={group.group}>
+                      {group.options.map((option, optIndex) => (
+                        <option key={optIndex} value={option.value}>
+                          {option.label} - {option.price}
+                        </option>
+                      ))}
                     </optgroup>
-                    <optgroup label="Special Occasions">
-                      <option value="party">
-                        Party / Event Mehndi Designs
-                      </option>
-                      <option value="festival">Festival Special Mehndi</option>
-                      <option value="custom">Custom Design Consultation</option>
-                    </optgroup>
-                  </select>
-                </div>
-
-                {showCustomInput && (
-                  <div className="form-group" style={{ marginTop: '15px' }}>
-                    <label className="form-label">
-                      Describe Your Custom Design
-                    </label>
-                    <input
-                      type="text"
-                      name="customServiceDetail"
-                      className="form-control"
-                      placeholder="e.g., Arabic fusion with glitter"
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                )}
+                  ))}
+                </select>
               </div>
 
-              <button type="submit" className="booking-btn">
-                Send Message
+              <button type="submit" className="submit-btn">
+                <span>Book Appointment</span>
+                <i className="fas fa-arrow-right"></i>
               </button>
             </form>
           </div>

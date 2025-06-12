@@ -7,6 +7,8 @@ import {
   faCheck,
   faMinus,
 } from '@fortawesome/free-solid-svg-icons'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 // Add icons to library
 library.add(faArrowRight, faCheck, faMinus)
@@ -24,7 +26,7 @@ const packageData = [
   { label: 'Photography', property: 'photography' },
   { label: 'Background Songs', property: 'songs' },
   { label: 'Decoration', property: 'decoration' },
-  { label: 'Welcome Board', property: 'welcomeBoard' }
+  { label: 'Welcome Board', property: 'welcomeBoard' },
 ]
 
 const packages = [
@@ -100,10 +102,48 @@ const packages = [
 
 const PackageTable = () => {
   const [isVisible, setIsVisible] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     setIsVisible(true)
   }, [])
+
+  const handleBooking = () => {
+    // Add smooth scroll to top before navigating
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+
+    // Small delay for scroll animation
+    setTimeout(() => {
+      navigate('/shop')
+      toast.success('Choose your preferred package to continue booking', {
+        position: 'top-center',
+        autoClose: 3000,
+      })
+    }, 500)
+  }
+
+  const renderCell = (pkg, property, value) => {
+    if (typeof value === 'string' || typeof value === 'number') {
+      return (
+        <span
+          className={`priceTag ${pkg.name === 'Elite' ? 'elitePrice' : ''}`}
+          style={{ animationDelay: `${Math.random() * 0.5}s` }}
+        >
+          {value}
+        </span>
+      )
+    }
+
+    return value ? (
+      <span className="checkIcon" title="Included">
+        <FontAwesomeIcon icon={faCheck} className="icon-animation" />
+      </span>
+    ) : (
+      <span className="dash-text" title="Not Available">
+        ―
+      </span>
+    )
+  }
 
   return (
     <div className={`paymentContainer ${isVisible ? 'animateFadeIn' : ''}`}>
@@ -146,23 +186,12 @@ const PackageTable = () => {
               >
                 <td data-label="Package Inclusions">{row.label}</td>
                 {packages.map((pkg, pkgIndex) => (
-                  <td key={pkgIndex} data-label={pkg.name}>
-                    {typeof pkg[row.property] === 'string' ||
-                    typeof pkg[row.property] === 'number' ? (
-                      <span className={`priceTag ${pkg.name === 'Elite' ? 'elitePrice' : ''}`}>
-                        {pkg[row.property]}
-                      </span>
-                    ) : (
-                      <span
-                        className={pkg[row.property] ? 'checkIcon' : 'dashIcon'}
-                        title={pkg[row.property] ? 'Included' : 'Not Available'}
-                      >
-                        <FontAwesomeIcon
-                          icon={pkg[row.property] ? faCheck : faMinus}
-                          className="icon-animation"
-                        />
-                      </span>
-                    )}
+                  <td
+                    key={pkgIndex}
+                    data-label={pkg.name}
+                    className={pkg.name === 'Elite' ? 'highlighted-cell' : ''}
+                  >
+                    {renderCell(pkg, row.property, pkg[row.property])}
                   </td>
                 ))}
               </tr>
@@ -178,7 +207,18 @@ const PackageTable = () => {
           opacity: isVisible ? 1 : 0,
         }}
       >
-        <button className="btnBook">
+        <button
+          className="btnBook"
+          onClick={handleBooking}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform =
+              'translateY(-5px) scale(1.02) rotateX(5deg)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform =
+              'translateY(0) scale(1) rotateX(0)'
+          }}
+        >
           Book Your Package Now
           <FontAwesomeIcon icon={faArrowRight} className="animate-bounce" />
         </button>

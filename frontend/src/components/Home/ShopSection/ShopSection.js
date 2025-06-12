@@ -6,38 +6,38 @@ const ShopSection = () => {
   const products = [
     {
       id: 1,
-      title: 'Basic Mehndi Package',
+      title: 'Cones',
       description:
         'Traditional designs perfect for small gatherings and casual events.',
       price: '$75',
-      image: '/webimg/product6.jpg',
+      image: '/webimg/product4.webp',
       alt: 'Basic Mehndi Design',
     },
     {
       id: 2,
-      title: 'Premium Mehndi Service',
+      title: 'Bridal Mehndi Kit',
       description:
         'Elaborate designs ideal for bridal ceremonies and special occasions.',
       price: '$150',
-      image: '/webimg/1.jpg',
+      image: '/webimg/product1.jpg',
       alt: 'Premium Mehndi Design',
     },
     {
       id: 3,
-      title: 'Custom Design Package',
+      title: 'Henna Powder',
       description:
         'Customized patterns tailored to your preferences and style.',
       price: '$200',
-      image: '/webimg/product1.jpg',
+      image: '/webimg/product2.webp',
       alt: 'Custom Mehndi Design',
     },
     {
       id: 4,
-      title: 'Traditional Designs',
+      title: 'Stecils',
       description:
         'Traditional henna patterns from various cultures and traditions.',
       price: '$50',
-      image: '/webimg/product2.webp',
+      image: '/webimg/1.jpg', 
       alt: 'Cultural or Traditional Designs',
     },
     {
@@ -54,7 +54,7 @@ const ShopSection = () => {
       description:
         'Reusable stencils for creating perfect traditional patterns.',
       price: '$75',
-      image: '/webimg/product4.webp',
+      image: '/webimg/product6.jpg',
       alt: 'Traditional Henna Stencils',
     },
   ]
