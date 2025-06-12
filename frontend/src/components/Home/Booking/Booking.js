@@ -85,44 +85,74 @@ const Booking = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    
+    // Validate form data before submission
+    if (!formData.fullName || !formData.email || !formData.phone || !formData.service) {
+      toast.error('Please fill all required fields')
+      return
+    }
+
     try {
-      const response = await fetch('/api/v1/bookings/create', {
+      // Format the request data
+      const bookingData = {
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        service: formData.service,
+        customServiceDetail: formData.customServiceDetail,
+        bookingDate: new Date().toISOString(),
+        status: 'pending',
+        amount: getServiceAmount(formData.service)
+      }
+
+      console.log('Sending booking data:', bookingData)
+
+      const response = await fetch('https://holo-henna-frontend.onrender.com/api/v1/booking', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          bookingDate: new Date().toISOString(),
-          status: 'pending',
-          amount: getServiceAmount(formData.service),
-        }),
+        body: JSON.stringify(bookingData),
+        credentials: 'include' // Include credentials if using sessions
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Failed to submit booking')
+      // Log the raw response for debugging
+      console.log('Response status:', response.status)
+      
+      // Get response text first
+      const responseText = await response.text()
+      console.log('Response text:', responseText)
+
+      // Try to parse JSON only if there's content
+      let data
+      try {
+        data = responseText ? JSON.parse(responseText) : null
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError)
+        throw new Error('Invalid response format from server')
       }
 
-      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data?.message || 'Failed to submit booking')
+      }
 
-      if (data.success) {
+      if (data?.success) {
         toast.success('Booking submitted successfully!')
+        // Reset form
         setFormData({
           fullName: '',
           email: '',
           phone: '',
           service: '',
-          customServiceDetail: '',
+          customServiceDetail: ''
         })
       } else {
-        throw new Error(data.message || 'Failed to submit booking')
+        throw new Error(data?.message || 'Booking submission failed')
       }
     } catch (error) {
       console.error('Booking error:', error)
-      toast.error(
-        error.message || 'Failed to submit booking. Please try again.'
-      )
+      toast.error(error.message || 'Failed to submit booking. Please try again.')
     }
   }
 
