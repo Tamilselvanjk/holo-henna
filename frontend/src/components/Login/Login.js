@@ -38,7 +38,7 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="welcome-section">
-        <h1>tamil</h1>
+        <h1>tamil henna</h1>
         <p>Experience the beauty of traditional henna artistry</p>
       </div>
       <div className="auth-section">
