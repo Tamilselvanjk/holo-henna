@@ -7,8 +7,9 @@ const cors = require('cors')
 // Load env config
 dotenv.config({ path: path.join(__dirname, '..', 'config', 'config.env') })
 
+// Initialize express app
 const app = express()
-z
+
 // Connect MongoDB
 mongoose
   .connect(process.env.DB_URL)
@@ -18,78 +19,43 @@ mongoose
     process.exit(1)
   })
 
-// Update CORS configuration
+// CORS configuration
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://holo-henna-frontend.onrender.com'],
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://holo-henna-frontend.onrender.com',
+    'https://holo-henna.onrender.com',
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
   credentials: true,
-  maxAge: 86400,
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
 }
 
+// Apply middlewares
 app.use(cors(corsOptions))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
-// Add preflight handler for all routes
-app.options('*', cors(corsOptions))
-
-// Add headers middleware
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', req.headers.origin)
-  res.header('Access-Control-Allow-Credentials', true)
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization')
-  next()
-})
-
-// Debug middleware to log requests
-app.use((req, res, next) => {
-  console.log(`[API] ${req.method} ${req.url}`)
-  next()
-})
-
-// API routes first
-app.use('/api/v1/orders', require('../routes/order'))
-app.use('/api/v1/products', require('../routes/product'))
-app.use('/api/v1/bookings', require('../routes/booking')) // Add booking routes
-
-// Serve frontend build
-app.use(express.static(path.join(__dirname, 'frontend', 'build')))
-
-
-// URL decode middleware
-app.use((req, res, next) => {
-  if (req.path.includes('%PUBLIC_URL%')) {
-    const newPath = req.path.replace('%PUBLIC_URL%', '')
-    if (newPath.endsWith('favicon.ico')) {
-      res.sendFile(path.join(__dirname, 'public', 'favicon.ico'))
-    } else if (newPath.endsWith('manifest.json')) {
-      res.sendFile(path.join(__dirname, 'public', 'manifest.json'))
-    } else {
-      res.status(404).send('Not found')
-    }
-  } else {
+// Add request logging in development
+if (process.env.NODE_ENV === 'development') {
+  app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path}`, req.body)
     next()
-  }
-})
+  })
+}
 
-// Add health check endpoint
-app.get('/api/v1/health', (req, res) => {
-  if (mongoose.connection.readyState === 1) {
-    res.status(200).json({ status: 'healthy', message: 'Server is running' })
-  } else {
-    res
-      .status(503)
-      .json({ status: 'unhealthy', message: 'Database connection issue' })
-  }
-})
+// API routes
+app.use('/api/v1/bookings', require('../routes/booking'))
+app.use('/api/v1/products', require('../routes/product'))
+app.use('/api/v1/orders', require('../routes/order'))
 
-// Improve error handling middleware
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error('API Error:', err)
   res.status(err.statusCode || 500).json({
     success: false,
     message: err.message || 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err.stack : undefined,
   })
 })
 
@@ -115,7 +81,7 @@ app.get('/', (req, res) => {
 
 // Catch-all route to send index.html for React routes
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
-});
+  res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
+})
 
 module.exports = app

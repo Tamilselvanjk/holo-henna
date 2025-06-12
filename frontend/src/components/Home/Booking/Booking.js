@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import './Booking.css'
 import { toast } from 'react-toastify'
+import { API_ENDPOINTS, apiRequest } from '../../../config/api'
 
 const serviceOptions = [
   {
@@ -109,19 +110,10 @@ const Booking = () => {
         bookingDate: new Date().toISOString()
       }
 
-      const response = await fetch('/api/v1/bookings', {
+      const response = await apiRequest(API_ENDPOINTS.bookings, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(bookingData)
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to create booking')
-      }
 
       toast.success('Booking submitted successfully!')
       setFormData({
