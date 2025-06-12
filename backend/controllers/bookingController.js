@@ -2,6 +2,14 @@ const Booking = require('../models/bookingModel')
 
 exports.createBooking = async (req, res) => {
   try {
+    // Validate request body
+    if (!req.body || !req.body.fullName || !req.body.email || !req.body.phone || !req.body.service) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields',
+      })
+    }
+
     const bookingData = {
       fullName: req.body.fullName,
       email: req.body.email,
@@ -23,10 +31,9 @@ exports.createBooking = async (req, res) => {
     })
   } catch (error) {
     console.error('Booking creation error:', error)
-    res.status(400).json({
+    res.status(500).json({
       success: false,
       message: error.message || 'Failed to create booking',
-      error: process.env.NODE_ENV === 'development' ? error : undefined,
     })
   }
 }

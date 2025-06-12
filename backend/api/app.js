@@ -45,8 +45,29 @@ if (process.env.NODE_ENV === 'development') {
   })
 }
 
-// API routes
-app.use('/api/v1/bookings', require('../routes/booking'))
+// Add JSON parsing error handler
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid JSON payload',
+    })
+  }
+  next(err)
+})
+
+// API routes with better error handling
+app.use('/api/v1/bookings', async (req, res, next) => {
+  try {
+    await require('../routes/booking')(req, res, next)
+  } catch (error) {
+    console.error('Booking route error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error in booking route',
+    })
+  }
+})
 app.use('/api/v1/products', require('../routes/product'))
 app.use('/api/v1/orders', require('../routes/order'))
 
