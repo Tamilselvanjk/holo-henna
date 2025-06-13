@@ -22,6 +22,7 @@ exports.createBooking = async (req, res) => {
         details: req.body.service.details,
       },
       bookingDate: req.body.bookingDate,
+      status: 'pending',
     }
 
     const booking = await Booking.create(bookingData)

@@ -118,24 +118,16 @@ const Booking = () => {
         credentials: 'include',
         body: JSON.stringify(bookingData)
       })
-
-      const text = await response.text()
       
-      // Check if response is empty
-      if (!text) {
-        throw new Error('Empty response from server')
-      }
-
-      // Try to parse JSON response
-      let data
-      try {
-        data = JSON.parse(text)
-      } catch (e) {
-        console.error('JSON Parse Error:', e, 'Response Text:', text)
-        throw new Error('Invalid response from server')
-      }
-
       if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Error response:', response.status, errorText)
+        throw new Error(`Server responded with ${response.status}: ${errorText}`)
+      }
+
+      const data = await response.json()
+
+      if (!data.success) {
         throw new Error(data.message || 'Failed to submit booking')
       }
 
@@ -154,11 +146,12 @@ const Booking = () => {
     } catch (error) {
       console.error('Booking error:', error)
       toast.dismiss(processingToast)
-      toast.error(error.message || 'Failed to submit booking')
+      toast.error(error.message || 'Failed to submit booking. Please try again.')
     } finally {
       setLoading(false)
     }
   }
+
 
   const getServiceAmount = (service) => {
     const servicePrices = {
