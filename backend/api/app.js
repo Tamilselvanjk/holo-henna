@@ -40,6 +40,13 @@ app.options('*', cors(corsOptions))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+// Middleware to set CORS headers for all routes
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Credentials', 'true')
+  next()
+})
+
+
 // Add request logging in development
 if (process.env.NODE_ENV === 'development') {
   app.use((req, res, next) => {
