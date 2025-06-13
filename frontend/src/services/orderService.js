@@ -1,6 +1,7 @@
-const BASE_URL = process.env.NODE_ENV === 'development'
-  ? 'http://localhost:3000/api/v1'
-  : 'https://holo-henna.onrender.com/api/v1';
+const BASE_URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3000/api/v1'
+    : 'https://holo-henna-frontend.onrender.com/api/v1'
 
 export class OrderService {
   static async createOrder(orderData) {
