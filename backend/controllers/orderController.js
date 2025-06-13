@@ -4,6 +4,9 @@ const User = require('../models/userModel')
 const Product = require('../models/productModel')
 
 exports.createOrder = async (req, res) => {
+  const session = await mongoose.startSession()
+  session.startTransaction()
+
   try {
     console.log('Creating order with data:', req.body)
 
@@ -14,6 +17,18 @@ exports.createOrder = async (req, res) => {
       })
     }
 
+    // Check stock availability
+    for (const item of req.body.orderItems) {
+      const product = await Product.findById(item.product).session(session)
+      if (!product) {
+        throw new Error(`Product ${item.product} not found`)
+      }
+      if (product.stock < item.quantity) {
+        throw new Error(`Insufficient stock for product ${product.name}`)
+      }
+    }
+
+    // Create order
     const orderData = {
       orderItems: req.body.orderItems,
       shippingAddress: req.body.shippingAddress,
@@ -22,8 +37,24 @@ exports.createOrder = async (req, res) => {
       status: 'processing',
     }
 
-    const order = await orderModel.create(orderData)
-    const populatedOrder = await order.populate('orderItems.product')
+    const order = await orderModel.create([orderData], { session })
+
+    // Update stock
+    if (req.body.updateStock) {
+      for (const item of req.body.orderItems) {
+        await Product.findByIdAndUpdate(
+          item.product,
+          { $inc: { stock: -item.quantity } },
+          { session, new: true }
+        )
+      }
+    }
+
+    await session.commitTransaction()
+
+    const populatedOrder = await orderModel
+      .findById(order[0]._id)
+      .populate('orderItems.product')
 
     res.status(201).json({
       success: true,
@@ -31,12 +62,14 @@ exports.createOrder = async (req, res) => {
       data: populatedOrder,
     })
   } catch (error) {
+    await session.abortTransaction()
     console.error('Order creation error:', error)
     res.status(500).json({
       success: false,
-      message: 'Failed to create order',
-      error: error.message,
+      message: error.message || 'Failed to create order',
     })
+  } finally {
+    session.endSession()
   }
 }
 

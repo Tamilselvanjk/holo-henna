@@ -31,35 +31,49 @@ const OrderSuccess = () => {
       : `https://holo-henna-frontend.onrender.com${imagePath}`
   }
 
-  useEffect(() => {
-    const fetchOrderDetails = async () => {
+useEffect(() => {
+  const fetchOrderDetails = async () => {
+    try {
+      setLoading(true)
+      const apiUrl = process.env.NODE_ENV === 'development'
+        ? `http://localhost:3000/api/v1/orders/${orderId}`
+        : `https://holo-henna-frontend.onrender.com/api/v1/orders/${orderId}`
+
+      const response = await fetch(apiUrl)
+
+      // Check if response is JSON and not empty
+      const text = await response.text()
+      let data = null
       try {
-        setLoading(true)
-        const apiUrl = process.env.NODE_ENV === 'development'
-          ? `http://localhost:3000/api/v1/orders/${orderId}`
-          : `https://holo-henna-frontend.onrender.com/api/v1/orders/${orderId}`
-
-        const response = await fetch(apiUrl)
-        const data = await response.json()
-
-        if (!response.ok) {
-          throw new Error(data.message || 'Failed to fetch order')
-        }
-
-        setOrderDetails(data.data)
-        toast.success('Order confirmed!')
-      } catch (error) {
-        console.error('Error fetching order:', error)
-        toast.error('Error loading order details')
-      } finally {
-        setLoading(false)
+        data = text ? JSON.parse(text) : null
+      } catch (e) {
+        throw new Error('Invalid JSON response')
       }
-    }
 
-    if (orderId) {
-      fetchOrderDetails()
+      if (!response.ok) {
+        throw new Error(data?.message || 'Failed to fetch order')
+      }
+
+      if (!data || !data.data) {
+        throw new Error('Order data not found')
+      }
+
+      setOrderDetails(data.data)
+      toast.success('Order confirmed!')
+    } catch (error) {
+      console.error('Error fetching order:', error)
+      toast.error('Error loading order details')
+      setOrderDetails(null)  // explicitly clear orderDetails on error
+    } finally {
+      setLoading(false)
     }
-  }, [orderId])
+  }
+
+  if (orderId) {
+    fetchOrderDetails()
+  }
+}, [orderId])
+
 
   if (loading) {
     return (

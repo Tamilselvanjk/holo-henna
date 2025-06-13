@@ -15,7 +15,10 @@ export class OrderService {
           'Origin': window.location.origin
         },
         credentials: 'include',
-        body: JSON.stringify(orderData)
+        body: JSON.stringify({
+          ...orderData,
+          updateStock: true // Add flag to update stock
+        })
       });
 
       const text = await response.text();
