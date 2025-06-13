@@ -118,6 +118,9 @@ const Booking = () => {
         credentials: 'include',
         body: JSON.stringify(bookingData)
       })
+
+      console.log('Full response:', response)
+      console.log('Response headers:', response.headers)
       
       if (!response.ok) {
         const errorText = await response.text()
@@ -138,7 +141,7 @@ const Booking = () => {
       if (!data.success) {
         throw new Error(data.message || 'Failed to submit booking')
       }
-      
+
       toast.dismiss(processingToast)
       toast.success('Booking submitted successfully!')
       
