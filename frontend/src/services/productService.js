@@ -1,4 +1,4 @@
-const PROD_URL = 'https://holo-henna-frontend.onrender.com/api/v1'
+const PROD_URL = 'https://holo-henna.onrender.com/api/v1'
 const DEV_URL = '/api/v1'; // Change to use consistent API path
 
 class ProductService {
