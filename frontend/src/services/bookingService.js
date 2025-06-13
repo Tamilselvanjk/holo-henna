@@ -1,6 +1,6 @@
 const API_URL = process.env.NODE_ENV === 'development' 
   ? 'http://localhost:3000/api/v1'  // Updated port to match backend
-  : 'https://holo-henna-frontend.onrender.com/api/v1'  // Updated to point to backend URL
+  : 'https://holo-henna.onrender.com/api/v1'  // Updated to point to backend URL
 
 export const BookingService = {
   createBooking: async (bookingData) => {
