@@ -5,6 +5,8 @@ const BASE_URL = process.env.NODE_ENV === 'development'
 export class OrderService {
   static async createOrder(orderData) {
     try {
+      console.log('Creating order:', orderData);
+
       const response = await fetch(`${BASE_URL}/orders/create`, {
         method: 'POST',
         headers: {
@@ -14,37 +16,29 @@ export class OrderService {
         credentials: 'include',
         body: JSON.stringify({
           ...orderData,
-          updateStock: true
+          updateStock: true // Add flag to update stock
         })
       });
 
-      // Log the raw response for debugging
-      console.log('Raw response:', response);
-
-      // Check status first
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData?.message || 'Failed to create order');
       }
 
-      // Get response text
-      const text = await response.text();
-      console.log('Response text:', text);
-
-      // Parse only if we have content
-      const data = text ? JSON.parse(text) : null;
-
-      if (!data) {
-        throw new Error('Empty response from server');
+      const data = await response.json();
+      
+      if (!data || !data.data) {
+        throw new Error('Invalid response format');
       }
 
       return {
         success: true,
-        data: data.data || data
+        data: data.data
       };
 
     } catch (error) {
       console.error('Order creation failed:', error);
-      throw new Error(error.message || 'Failed to create order');
+      throw error;
     }
   }
 
@@ -108,7 +102,4 @@ export class OrderService {
     }
   }
 }
-    
-  
-
 
