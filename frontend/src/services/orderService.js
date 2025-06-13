@@ -11,8 +11,7 @@ export class OrderService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Origin': window.location.origin
+          'Accept': 'application/json'
         },
         credentials: 'include',
         body: JSON.stringify({
@@ -21,16 +20,22 @@ export class OrderService {
         })
       });
 
-      const text = await response.text();
-      
-
-      const data = text ? JSON.parse(text) : null;
-
       if (!response.ok) {
-        throw new Error(data?.message || 'Failed to create order');
+        const errorData = await response.json();
+        throw new Error(errorData?.message || 'Failed to create order');
       }
 
-      return data;
+      const data = await response.json();
+      
+      if (!data || !data.data) {
+        throw new Error('Invalid response format');
+      }
+
+      return {
+        success: true,
+        data: data.data
+      };
+
     } catch (error) {
       console.error('Order creation failed:', error);
       throw error;

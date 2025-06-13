@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 import { OrderService } from '../../../services/orderService'
 import { initializeRazorpay } from '../../../services/razorpayService'
-import './PaymentForm.css'
 import { useNavigate } from 'react-router-dom'
+import './PaymentForm.css'
 
 const PaymentForm = ({ total, onBack, cartItems, shippingAddress, onOrderComplete }) => {
   const [loading, setLoading] = useState(false)
@@ -16,7 +16,6 @@ const PaymentForm = ({ total, onBack, cartItems, shippingAddress, onOrderComplet
     })
 
     try {
-      // First initialize Razorpay
       const razorpayResponse = await initializeRazorpay(total, {
         prefill: {
           name: shippingAddress.name,
@@ -25,11 +24,10 @@ const PaymentForm = ({ total, onBack, cartItems, shippingAddress, onOrderComplet
         },
       })
 
-      if (!razorpayResponse.success) {
+      if (!razorpayResponse?.success) {
         throw new Error('Payment initialization failed')
       }
 
-      // Then create order
       const orderData = {
         orderItems: cartItems.map((item) => ({
           product: item._id,
@@ -40,23 +38,20 @@ const PaymentForm = ({ total, onBack, cartItems, shippingAddress, onOrderComplet
         shippingAddress,
         totalAmount: total,
         paymentMethod: 'razorpay',
-        paymentDetails: {
-          razorpay_payment_id: razorpayResponse.razorpay_payment_id,
-          razorpay_order_id: razorpayResponse.razorpay_order_id,
-        },
+        paymentDetails: razorpayResponse,
         status: 'confirmed',
       }
 
       const response = await OrderService.createOrder(orderData)
 
-      if (response.success) {
-        toast.dismiss(processingToast)
-        toast.success('Order placed successfully!')
-        onOrderComplete && onOrderComplete()
-        navigate(`/order-success/${response.data._id}`, { replace: true })
-      } else {
+      if (!response || !response.data) {
         throw new Error('Order creation failed')
       }
+
+      toast.dismiss(processingToast)
+      toast.success('Order placed successfully!')
+      onOrderComplete && onOrderComplete()
+      navigate(`/order-success/${response.data._id}`, { replace: true })
     } catch (error) {
       console.error('Payment error:', error)
       toast.dismiss(processingToast)
