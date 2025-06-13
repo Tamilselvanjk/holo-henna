@@ -125,12 +125,20 @@ const Booking = () => {
         throw new Error(`Server responded with ${response.status}: ${errorText}`)
       }
 
-      const data = await response.json()
+      const text = await response.text()
+
+      let data
+      try {
+        data = text ? JSON.parse(text) : {}
+      } catch (err) {
+        console.error('Failed to parse JSON:', err, 'Response text:', text)
+        throw new Error('Invalid JSON response from server')
+      }
 
       if (!data.success) {
         throw new Error(data.message || 'Failed to submit booking')
       }
-
+      
       toast.dismiss(processingToast)
       toast.success('Booking submitted successfully!')
       
