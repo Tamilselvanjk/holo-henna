@@ -1,16 +1,17 @@
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-const BASE_URL = isDevelopment 
-  ? 'http://localhost:3000/api/v1'
-  : 'https://holo-henna-frontend.onrender.com/api/v1';
+export const API_CONFIG = {
+  baseURL: isDevelopment 
+    ? 'http://localhost:3000/api/v1'
+    : 'https://holo-henna-frontend.onrender.com/api/v1',
+  endpoints: {
+    orders: '/orders',
+    createOrder: '/orders/create'
+  }
+}
 
-export const API_ENDPOINTS = {
-  bookings: `${BASE_URL}/bookings`,
-  products: `${BASE_URL}/products`,
-  orders: `${BASE_URL}/orders`
-};
-
-export const apiRequest = async (endpoint, options = {}) => {
+export const makeRequest = async (endpoint, options = {}) => {
+  const url = `${API_CONFIG.baseURL}${endpoint}`;
   const config = {
     ...options,
     headers: {
@@ -20,12 +21,23 @@ export const apiRequest = async (endpoint, options = {}) => {
     }
   };
 
-  const response = await fetch(endpoint, config);
-  const data = await response.json();
+  try {
+    console.log('Making request to:', url);
+    const response = await fetch(url, config);
+    console.log('Response status:', response.status);
+    
+    const text = await response.text();
+    console.log('Response text:', text);
 
-  if (!response.ok) {
-    throw new Error(data.message || 'API request failed');
+    const data = text ? JSON.parse(text) : null;
+
+    if (!response.ok) {
+      throw new Error(data?.message || `HTTP error! status: ${response.status}`);
+    }
+
+    return data;
+  } catch (error) {
+    console.error('API request failed:', error);
+    throw error;
   }
-
-  return data;
 };

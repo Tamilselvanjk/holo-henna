@@ -19,31 +19,43 @@ mongoose
     process.exit(1)
   })
 
-// CORS configuration
+// Updated CORS configuration
 const corsOptions = {
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'https://holo-henna-frontend.onrender.com',
-    'https://holo-henna.onrender.com',
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://holo-henna-frontend.onrender.com',
+    ]
+    callback(null, allowedOrigins.includes(origin) || !origin)
+  },
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'Origin'],
+  exposedHeaders: ['Access-Control-Allow-Origin'],
 }
 
-// Apply middlewares
 app.use(cors(corsOptions))
+app.options('*', cors(corsOptions))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 // Add request logging in development
 if (process.env.NODE_ENV === 'development') {
   app.use((req, res, next) => {
-    console.log(`${req.method} ${req.path}`, req.body)
+    console.log(`${req.method} ${req.url}`, {
+      headers: req.headers,
+      body: req.body,
+    })
     next()
   })
 }
+
+// Debug middleware
+app.use((req, res, next) => {
+  console.log(`[${req.method}] ${req.path}`, { body: req.body, origin: req.headers.origin })
+  next()
+})
 
 // Add JSON parsing error handler
 app.use((err, req, res, next) => {
@@ -69,7 +81,7 @@ app.use('/api/v1/bookings', async (req, res, next) => {
   }
 })
 app.use('/api/v1/products', require('../routes/product'))
-app.use('/api/v1/orders', require('../routes/order'))
+app.use('/api/v1/orders', require('../routes/order')) // Mount orders route
 
 // Error handling middleware
 app.use((err, req, res, next) => {

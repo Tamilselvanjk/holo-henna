@@ -9,31 +9,32 @@ const OrdersPage = () => {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    getOrders()
-  }, [])
-
   const getOrders = async () => {
     try {
       setLoading(true)
       const result = await OrderService.getAllOrders()
 
-      if (!result.success) {
+      if (result.success && Array.isArray(result.orders)) {
+        const sortedOrders = result.orders
+          .filter((order) => order && order._id) // Filter out invalid orders
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+
+        setOrders(sortedOrders)
+      } else {
         throw new Error(result.message || 'Failed to fetch orders')
       }
-
-      const sortedOrders = (result.orders || []).sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      )
-      setOrders(sortedOrders)
     } catch (error) {
       console.error('Failed to fetch orders:', error)
-      toast.error('Unable to load orders')
+      toast.error('Unable to load orders. Please try again.')
       setOrders([])
     } finally {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    getOrders()
+  }, [])
 
   const getStatusClass = (status) => {
     const statusMap = {

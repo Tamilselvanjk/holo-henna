@@ -110,30 +110,23 @@ const Booking = () => {
         bookingDate: new Date().toISOString()
       }
 
-      const response = await fetch('https://holo-henna-frontend.onrender.com/api/v1/bookings', {
+      const apiUrl = process.env.NODE_ENV === 'development' 
+        ? 'http://localhost:3000/api/v1/bookings'
+        : 'https://holo-henna-frontend.onrender.com/api/v1/bookings'
+
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Origin': window.location.origin
+          'Accept': 'application/json'
         },
-        credentials: 'include',
         body: JSON.stringify(bookingData)
       })
 
-      const responseText = await response.text()
-      console.log('Raw response:', responseText)
+      const data = await response.json()
 
-      let data
-      try {
-        data = responseText ? JSON.parse(responseText) : null
-      } catch (error) {
-        console.error('JSON parse error:', error)
-        throw new Error('Invalid response from server')
-      }
-
-      if (!response.ok || !data?.success) {
-        throw new Error(data?.message || 'Failed to submit booking')
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to submit booking')
       }
 
       toast.success('Booking submitted successfully!')

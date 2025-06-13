@@ -5,13 +5,7 @@ import { initializeRazorpay } from '../../../services/razorpayService'
 import './PaymentForm.css'
 import { useNavigate } from 'react-router-dom'
 
-const PaymentForm = ({
-  total = 0,
-  onBack,
-  cartItems = [],
-  shippingAddress = {},
-  onOrderComplete,
-}) => {
+const PaymentForm = ({ total, onBack, cartItems, shippingAddress, onOrderComplete }) => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
@@ -22,57 +16,51 @@ const PaymentForm = ({
     })
 
     try {
-      if (!cartItems.length) {
-        throw new Error('No items in cart')
-      }
-
-      const orderItems = cartItems.map((item) => ({
-        product: item._id,
-        quantity: Number(item.quantity || 1),
-        price: Number(item.price || 0),
-      }))
-
-      const orderData = {
-        orderItems,
-        shippingAddress,
-        totalAmount: Number(total),
-        paymentMethod: 'razorpay',
-      }
-
-      const paymentResult = await initializeRazorpay(total, {
+      // First initialize Razorpay
+      const razorpayResponse = await initializeRazorpay(total, {
         prefill: {
           name: shippingAddress.name,
           email: shippingAddress.email,
           contact: shippingAddress.mobile,
         },
-        notes: {
-          order_type: 'mehndi_service',
-          shipping_address: JSON.stringify(shippingAddress),
-        },
-        order_data: orderData,
       })
 
-      if (paymentResult?.success) {
-        const result = await OrderService.createOrder({
-          ...orderData,
-          paymentDetails: {
-            razorpay_payment_id: paymentResult.razorpay_payment_id,
-            razorpay_order_id: paymentResult.razorpay_order_id,
-          },
-        })
+      if (!razorpayResponse.success) {
+        throw new Error('Payment initialization failed')
+      }
 
-        if (result.success) {
-          toast.dismiss(processingToast)
-          toast.success('Payment successful!')
-          // Call onOrderComplete to clear the cart
-          onOrderComplete && onOrderComplete()
-          navigate(`/order-success/${result.data._id}`, { replace: true })
-        }
+      // Then create order
+      const orderData = {
+        orderItems: cartItems.map((item) => ({
+          product: item._id,
+          quantity: item.quantity,
+          price: item.price,
+          name: item.name,
+        })),
+        shippingAddress,
+        totalAmount: total,
+        paymentMethod: 'razorpay',
+        paymentDetails: {
+          razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+          razorpay_order_id: razorpayResponse.razorpay_order_id,
+        },
+        status: 'confirmed',
+      }
+
+      const response = await OrderService.createOrder(orderData)
+
+      if (response.success) {
+        toast.dismiss(processingToast)
+        toast.success('Order placed successfully!')
+        onOrderComplete && onOrderComplete()
+        navigate(`/order-success/${response.data._id}`, { replace: true })
+      } else {
+        throw new Error('Order creation failed')
       }
     } catch (error) {
       console.error('Payment error:', error)
       toast.dismiss(processingToast)
-      toast.error(error.message || 'Payment failed. Please try again.')
+      toast.error(error.message || 'Payment failed')
     } finally {
       setLoading(false)
     }

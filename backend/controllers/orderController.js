@@ -5,69 +5,37 @@ const Product = require('../models/productModel')
 
 exports.createOrder = async (req, res) => {
   try {
-    const { orderItems, shippingAddress, totalAmount, paymentMethod } = req.body
+    console.log('Creating order with data:', req.body)
 
-    if (!Array.isArray(orderItems) || orderItems.length === 0) {
+    if (!req.body.orderItems?.length || !req.body.shippingAddress) {
       return res.status(400).json({
         success: false,
-        message: 'Order items are required',
+        message: 'Missing required order data',
       })
     }
 
-    // Validate products and check stock
-    const productIds = orderItems.map((item) => item.product)
-    const products = await Product.find({ _id: { $in: productIds } })
-
-    // Verify all products exist and have sufficient stock
-    for (const item of orderItems) {
-      const product = products.find((p) => p._id.toString() === item.product)
-      if (!product) {
-        return res.status(400).json({
-          success: false,
-          message: `Product ${item.product} not found`,
-        })
-      }
-      if (product.stock < item.quantity) {
-        return res.status(400).json({
-          success: false,
-          message: `Insufficient stock for ${product.name}`,
-        })
-      }
+    const orderData = {
+      orderItems: req.body.orderItems,
+      shippingAddress: req.body.shippingAddress,
+      totalAmount: req.body.totalAmount,
+      paymentMethod: req.body.paymentMethod,
+      status: 'processing',
     }
 
-    // Update product stock
-    const bulkOps = orderItems.map((item) => ({
-      updateOne: {
-        filter: { _id: item.product },
-        update: { $inc: { stock: -item.quantity } },
-      },
-    }))
-
-    await Product.bulkWrite(bulkOps)
-
-    // Create order
-    const order = new orderModel({
-      orderItems,
-      shippingAddress,
-      totalAmount,
-      paymentMethod,
-      status: 'processing',
-    })
-
-    const savedOrder = await order.save()
-    const populatedOrder = await orderModel
-      .findById(savedOrder._id)
-      .populate('orderItems.product', 'name price images')
+    const order = await orderModel.create(orderData)
+    const populatedOrder = await order.populate('orderItems.product')
 
     res.status(201).json({
       success: true,
+      message: 'Order created successfully',
       data: populatedOrder,
     })
   } catch (error) {
     console.error('Order creation error:', error)
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: 'Failed to create order',
+      error: error.message,
     })
   }
 }
@@ -75,12 +43,18 @@ exports.createOrder = async (req, res) => {
 // Get order by ID - /api/v1/order/:id
 exports.getOrder = async (req, res) => {
   try {
-    const order = await orderModel
-      .findById(req.params.id)
-      .populate({
-        path: 'orderItems.product',
-        select: 'name price images',
+    const { id } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid order ID format',
       })
+    }
+
+    const order = await orderModel
+      .findById(id)
+      .populate('orderItems.product')
       .lean()
 
     if (!order) {
@@ -95,7 +69,7 @@ exports.getOrder = async (req, res) => {
       data: order,
     })
   } catch (error) {
-    console.error('Error fetching order:', error)
+    console.error('Get order error:', error)
     res.status(500).json({
       success: false,
       message: 'Error fetching order details',

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import { OrderService } from '../../../services/orderService'
 import { toast } from 'react-toastify'
 import './OrderSuccess.css'
 
@@ -10,28 +9,48 @@ const OrderSuccess = () => {
   const { orderId } = useParams()
   const navigate = useNavigate()
 
-  useEffect(() => {
-    // Clear any existing toasts when entering order success page
-    toast.dismiss()
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount)
+  }
 
+  const formatStatus = (status) => {
+    if (!status) return 'Processing'
+    return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
+  }
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return '/webimg/placeholder.jpg'
+    if (imagePath.startsWith('http')) return imagePath
+    return process.env.NODE_ENV === 'development'
+      ? `http://localhost:3000${imagePath}`
+      : `https://holo-henna-frontend.onrender.com${imagePath}`
+  }
+
+  useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
         setLoading(true)
-        const result = await OrderService.getOrder(orderId)
+        const apiUrl = process.env.NODE_ENV === 'development'
+          ? `http://localhost:3000/api/v1/orders/${orderId}`
+          : `https://holo-henna-frontend.onrender.com/api/v1/orders/${orderId}`
 
-        if (!result.success) {
-          throw new Error(result.message || 'Failed to fetch order')
+        const response = await fetch(apiUrl)
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to fetch order')
         }
 
-        setOrderDetails(result.data || result.order)
-        toast.success('Payment completed successfully!', {
-          autoClose: 3000,
-          position: 'top-center',
-        })
+        setOrderDetails(data.data)
+        toast.success('Order confirmed!')
       } catch (error) {
         console.error('Error fetching order:', error)
         toast.error('Error loading order details')
-        navigate('/', { replace: true })
       } finally {
         setLoading(false)
       }
@@ -40,35 +59,22 @@ const OrderSuccess = () => {
     if (orderId) {
       fetchOrderDetails()
     }
-  }, [orderId, navigate])
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount)
-  }
-
-  const formatStatus = (status) => {
-    return status?.charAt(0).toUpperCase() + status?.slice(1) || 'Processing'
-  }
-
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return ''
-    if (imagePath.startsWith('http')) return imagePath
-    return process.env.NODE_ENV === 'production'
-      ? `https://holo-henna.onrender.com${imagePath}`
-      : `${window.location.origin}${imagePath}`
-  }
+  }, [orderId])
 
   if (loading) {
     return (
       <div className="loading-spinner-container">
         <div className="loading-spinner"></div>
-        <div className="loading-text">Loading</div>
-        <div className="loading-progress">
-          <div className="loading-progress-bar"></div>
-        </div>
+        <p>Loading order details...</p>
+      </div>
+    )
+  }
+
+  if (!orderDetails) {
+    return (
+      <div className="error-container">
+        <h2>Order Not Found</h2>
+        <Link to="/" className="back-to-home">Return to Home</Link>
       </div>
     )
   }
@@ -87,66 +93,48 @@ const OrderSuccess = () => {
             Order ID: <span>#{orderDetails?._id?.slice(-8)}</span>
           </div>
 
-          {/* Order Items List */}
-          <div className="order-items-section">
-            <h4>Order Items</h4>
-            {orderDetails?.orderItems?.map((item, index) => (
-              <div key={index} className="order-item">
-                <div className="item-image">
-                  {item.product?.images?.[0]?.image && (
+          {orderDetails?.orderItems?.length > 0 && (
+            <div className="order-items-section">
+              <h4>Order Items</h4>
+              {orderDetails.orderItems.map((item, index) => (
+                <div key={index} className="order-item">
+                  <div className="item-image">
                     <img
-                      src={getImageUrl(item.product.images[0].image)}
-                      alt={item.product.name || 'Product image'}
+                      src={getImageUrl(item.product?.images?.[0]?.image)}
+                      alt={item.product?.name || 'Product'}
                       onError={(e) => {
                         e.target.onerror = null
-                        e.target.src = '/webimg/placeholder.jpg'
+                        
                       }}
                     />
-                  )}
+                  </div>
+                  <div className="item-info">
+                    <h5>{item.product?.name || 'Product Unavailable'}</h5>
+                    <p>Quantity: {item.quantity}</p>
+                    <p className="price">{formatCurrency(item.price)}</p>
+                  </div>
                 </div>
-                <div className="item-info">
-                  <h5>{item.product?.name}</h5>
-                  <p>Quantity: {item.quantity}</p>
-                  <p className="price">{formatCurrency(item.price)}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
-          {/* Shipping Details */}
           <div className="shipping-info">
             <h4>Shipping Address</h4>
             <div className="address-details">
-              <p>
-                <strong>{orderDetails?.shippingAddress?.name}</strong>
-              </p>
+              <p><strong>{orderDetails?.shippingAddress?.name}</strong></p>
               <p>{orderDetails?.shippingAddress?.street}</p>
               <p>
-                {orderDetails?.shippingAddress?.city},{' '}
-                {orderDetails?.shippingAddress?.state}
+                {orderDetails?.shippingAddress?.city}, {orderDetails?.shippingAddress?.state}
               </p>
               <p>PIN: {orderDetails?.shippingAddress?.pincode}</p>
               <p>Mobile: {orderDetails?.shippingAddress?.mobile}</p>
             </div>
           </div>
 
-          <div className="order-status">
-            Status:{' '}
-            <span className={`status ${orderDetails?.status}`}>
-              {formatStatus(orderDetails?.status)}
-            </span>
-          </div>
-
-          <div className="total-section">
-            Total Amount:{' '}
-            <span>{formatCurrency(orderDetails?.totalAmount)}</span>
+          <div className="order-total">
+            Total Amount: <span>{formatCurrency(orderDetails?.totalAmount || 0)}</span>
           </div>
         </div>
-
-        <p className="confirmation">
-          Your order has been successfully placed. You can track your order in
-          the Orders section.
-        </p>
 
         <div className="action-buttons">
           <Link to="/" className="action-btn continue-shopping">
@@ -162,5 +150,19 @@ const OrderSuccess = () => {
     </div>
   )
 }
+
+
+
+        <div className="action-buttons">
+          <Link to="/" className="action-btn continue-shopping">
+            <i className="fas fa-shopping-cart"></i>
+            Continue Shopping
+          </Link>
+          <Link to="/orders" className="action-btn view-orders">
+            <i className="fas fa-list-ul"></i>
+            View Orders
+          </Link>
+        </div>
+
 
 export default OrderSuccess
