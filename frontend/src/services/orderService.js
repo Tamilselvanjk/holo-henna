@@ -1,7 +1,6 @@
-const BASE_URL =
-  process.env.NODE_ENV === 'development'
-    ? 'https://holo-henna-frontend.onrender.com/api/v1'
-    : 'https://holo-henna.onrender.com/api/v1'
+const BASE_URL = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:3000/api/v1'
+  : 'https://holo-henna-frontend.onrender.com/api/v1';
 
 export class OrderService {
   static async createOrder(orderData) {
@@ -41,22 +40,24 @@ export class OrderService {
   static async getOrderById(orderId) {
     try {
       const response = await fetch(`${BASE_URL}/orders/${orderId}`, {
+        method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
         },
         credentials: 'include'
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to fetch order');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch order');
       }
 
+      const result = await response.json();
       return {
         success: true,
-        data: data.data
+        data: result.data
       };
     } catch (error) {
       console.error('Order fetch failed:', error);

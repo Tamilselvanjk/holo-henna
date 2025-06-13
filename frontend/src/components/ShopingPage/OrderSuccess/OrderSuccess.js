@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { OrderService } from '../../../services/orderService'
 import './OrderSuccess.css'
 
 const OrderSuccess = () => {
@@ -31,49 +32,31 @@ const OrderSuccess = () => {
       : `https://holo-henna-frontend.onrender.com${imagePath}`
   }
 
-useEffect(() => {
-  const fetchOrderDetails = async () => {
-    try {
-      setLoading(true)
-      const apiUrl = process.env.NODE_ENV === 'development'
-        ? `http://localhost:3000/api/v1/orders/${orderId}`
-        : `https://holo-henna-frontend.onrender.com/api/v1/orders/${orderId}`
-
-      const response = await fetch(apiUrl)
-
-      // Check if response is JSON and not empty
-      const text = await response.text()
-      let data = null
+  useEffect(() => {
+    const fetchOrderDetails = async () => {
       try {
-        data = text ? JSON.parse(text) : null
-      } catch (e) {
-        throw new Error('Invalid JSON response')
-      }
+        setLoading(true)
+        const result = await OrderService.getOrderById(orderId)
 
-      if (!response.ok) {
-        throw new Error(data?.message || 'Failed to fetch order')
-      }
+        if (!result.success || !result.data) {
+          throw new Error('Failed to fetch order details')
+        }
 
-      if (!data || !data.data) {
-        throw new Error('Order data not found')
+        setOrderDetails(result.data)
+        toast.success('Order confirmed!')
+      } catch (error) {
+        console.error('Error fetching order:', error)
+        toast.error('Error loading order details')
+        navigate('/orders')
+      } finally {
+        setLoading(false)
       }
-
-      setOrderDetails(data.data)
-      toast.success('Order confirmed!')
-    } catch (error) {
-      console.error('Error fetching order:', error)
-      toast.error('Error loading order details')
-      setOrderDetails(null)  // explicitly clear orderDetails on error
-    } finally {
-      setLoading(false)
     }
-  }
 
-  if (orderId) {
-    fetchOrderDetails()
-  }
-}, [orderId])
-
+    if (orderId) {
+      fetchOrderDetails()
+    }
+  }, [orderId, navigate])
 
   if (loading) {
     return (
@@ -164,19 +147,5 @@ useEffect(() => {
     </div>
   )
 }
-
-
-
-        <div className="action-buttons">
-          <Link to="/" className="action-btn continue-shopping">
-            <i className="fas fa-shopping-cart"></i>
-            Continue Shopping
-          </Link>
-          <Link to="/orders" className="action-btn view-orders">
-            <i className="fas fa-list-ul"></i>
-            View Orders
-          </Link>
-        </div>
-
 
 export default OrderSuccess
