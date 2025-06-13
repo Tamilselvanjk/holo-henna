@@ -38,14 +38,17 @@ const PaymentForm = ({ total, onBack, cartItems, shippingAddress, onOrderComplet
         shippingAddress,
         totalAmount: total,
         paymentMethod: 'razorpay',
-        paymentDetails: razorpayResponse,
+        paymentDetails: {
+          razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+          razorpay_order_id: razorpayResponse.razorpay_order_id,
+        },
         status: 'confirmed',
       }
 
       const response = await OrderService.createOrder(orderData)
 
-      if (!response || !response.data) {
-        throw new Error('Order creation failed')
+      if (!response || !response.success) {
+        throw new Error(response?.message || 'Order creation failed')
       }
 
       toast.dismiss(processingToast)
@@ -55,7 +58,7 @@ const PaymentForm = ({ total, onBack, cartItems, shippingAddress, onOrderComplet
     } catch (error) {
       console.error('Payment error:', error)
       toast.dismiss(processingToast)
-      toast.error(error.message || 'Payment failed')
+      toast.error(error.message || 'Payment failed. Please try again.')
     } finally {
       setLoading(false)
     }

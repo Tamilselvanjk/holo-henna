@@ -14,26 +14,32 @@ export class OrderService {
           'Accept': 'application/json'
         },
         credentials: 'include',
-        body: JSON.stringify({
-          ...orderData,
-          updateStock: true // Add flag to update stock
-        })
+        body: JSON.stringify(orderData)
       });
 
+      // First check if response is ok
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData?.message || 'Failed to create order');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      // Try to parse response carefully
+      let data;
+      const text = await response.text();
       
-      if (!data || !data.data) {
-        throw new Error('Invalid response format');
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch (e) {
+        console.error('JSON Parse Error:', e, 'Response Text:', text);
+        throw new Error('Invalid response format from server');
+      }
+
+      if (!data) {
+        throw new Error('Empty response from server');
       }
 
       return {
         success: true,
-        data: data.data
+        data: data.data || data
       };
 
     } catch (error) {
