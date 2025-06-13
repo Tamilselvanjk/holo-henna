@@ -104,6 +104,7 @@ const Booking = () => {
         bookingDate: new Date().toISOString()
       }
 
+      // Update API URL
       const apiUrl = process.env.NODE_ENV === 'development'
         ? 'http://localhost:3000/api/v1/bookings'
         : 'https://holo-henna-frontend.onrender.com/api/v1/bookings'
@@ -112,34 +113,30 @@ const Booking = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Cache-Control': 'no-cache'
+          'Accept': 'application/json'
         },
         credentials: 'include',
         body: JSON.stringify(bookingData)
       })
 
-      console.log('Full response:', response)
-      console.log('Response headers:', response.headers)
-      
+      // Check response status first
       if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Error response:', response.status, errorText)
-        throw new Error(`Server responded with ${response.status}: ${errorText}`)
+        const errorData = await response.json()
+        throw new Error(errorData.message || `Server error: ${response.status}`)
       }
 
+      // Get response text and try to parse
       const text = await response.text()
-
       let data
       try {
-        data = text ? JSON.parse(text) : {}
+        data = text ? JSON.parse(text) : null
       } catch (err) {
-        console.error('Failed to parse JSON:', err, 'Response text:', text)
-        throw new Error('Invalid JSON response from server')
+        console.error('Failed to parse response:', err, text)
+        throw new Error('Invalid server response')
       }
 
-      if (!data.success) {
-        throw new Error(data.message || 'Failed to submit booking')
+      if (!data || !data.success) {
+        throw new Error(data?.message || 'Booking failed')
       }
 
       toast.dismiss(processingToast)
@@ -157,7 +154,7 @@ const Booking = () => {
     } catch (error) {
       console.error('Booking error:', error)
       toast.dismiss(processingToast)
-      toast.error(error.message || 'Failed to submit booking. Please try again.')
+      toast.error(error.message || 'Failed to submit booking')
     } finally {
       setLoading(false)
     }
@@ -312,3 +309,4 @@ const Booking = () => {
 }
 
 export default Booking
+

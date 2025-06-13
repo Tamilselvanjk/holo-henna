@@ -11,13 +11,12 @@ const PaymentForm = ({ total, onBack, cartItems, shippingAddress, onOrderComplet
 
   const handleRazorpayPayment = async () => {
     setLoading(true)
-    let processingToast = null
+    const processingToast = toast.loading('Processing payment...', {
+      position: 'top-center',
+    })
 
     try {
-      processingToast = toast.loading('Initializing payment...', {
-        position: 'top-center',
-      })
-
+      // Initialize Razorpay
       const razorpayResponse = await initializeRazorpay(total, {
         prefill: {
           name: shippingAddress.name,
@@ -30,6 +29,7 @@ const PaymentForm = ({ total, onBack, cartItems, shippingAddress, onOrderComplet
         throw new Error('Payment initialization failed')
       }
 
+      // Create order
       const orderData = {
         orderItems: cartItems.map((item) => ({
           product: item._id,
@@ -44,23 +44,28 @@ const PaymentForm = ({ total, onBack, cartItems, shippingAddress, onOrderComplet
           razorpay_payment_id: razorpayResponse.razorpay_payment_id,
           razorpay_order_id: razorpayResponse.razorpay_order_id,
         },
-        status: 'confirmed',
       }
 
-      const response = await OrderService.createOrder(orderData)
+      console.log('Sending order data:', orderData)
 
-      if (!response?.success || !response?.data?._id) {
-        throw new Error('Order creation failed - Invalid response')
+      const orderResponse = await OrderService.createOrder(orderData)
+      console.log('Order response:', orderResponse)
+
+      if (!orderResponse?.success || !orderResponse?.data?._id) {
+        throw new Error('Order creation failed')
       }
 
+      // Clear loading and show success
       toast.dismiss(processingToast)
-      toast.success('Order placed successfully!')
+      toast.success('Payment successful!')
       onOrderComplete && onOrderComplete()
-      navigate(`/order-success/${response.data._id}`, { replace: true })
+
+      // Navigate to success page
+      navigate(`/order-success/${orderResponse.data._id}`, { replace: true })
     } catch (error) {
       console.error('Payment error:', error)
       toast.dismiss(processingToast)
-      toast.error(error.message || 'Payment failed. Please try again.')
+      toast.error(error.message || 'Payment failed')
     } finally {
       setLoading(false)
     }

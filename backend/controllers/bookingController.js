@@ -4,11 +4,29 @@ exports.createBooking = async (req, res) => {
   try {
     console.log('Received booking data:', req.body)
 
-    // Validate request body
-    if (!req.body || !req.body.fullName || !req.body.email || !req.body.phone || !req.body.service) {
+    // Validate required fields
+    if (!req.body.fullName || !req.body.email || !req.body.phone || !req.body.service) {
       return res.status(400).json({
         success: false,
         message: 'Missing required fields',
+      })
+    }
+
+    // Validate phone number format
+    const phoneRegex = /^\d{10}$/
+    if (!phoneRegex.test(req.body.phone)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid phone number format',
+      })
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(req.body.email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format',
       })
     }
 

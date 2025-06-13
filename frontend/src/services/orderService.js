@@ -9,8 +9,7 @@ export class OrderService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Origin': window.location.origin
+          'Accept': 'application/json'
         },
         credentials: 'include',
         body: JSON.stringify({
@@ -19,31 +18,23 @@ export class OrderService {
         })
       });
 
-      // Get response text first
-      const text = await response.text();
-      
-      // Check if response is empty
-      if (!text) {
-        throw new Error('Server returned empty response');
-      }
+      // Log the raw response for debugging
+      console.log('Raw response:', response);
 
-      // Try to parse JSON
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch (e) {
-        console.error('JSON Parse Error:', e, 'Response Text:', text);
-        throw new Error('Invalid JSON response from server');
-      }
-
-      // Check response status
+      // Check status first
       if (!response.ok) {
-        throw new Error(data?.message || `HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Validate response data
-      if (!data || (!data.data && !data.success)) {
-        throw new Error('Invalid response format from server');
+      // Get response text
+      const text = await response.text();
+      console.log('Response text:', text);
+
+      // Parse only if we have content
+      const data = text ? JSON.parse(text) : null;
+
+      if (!data) {
+        throw new Error('Empty response from server');
       }
 
       return {
@@ -53,7 +44,7 @@ export class OrderService {
 
     } catch (error) {
       console.error('Order creation failed:', error);
-      throw error;
+      throw new Error(error.message || 'Failed to create order');
     }
   }
 
@@ -117,4 +108,7 @@ export class OrderService {
     }
   }
 }
+    
+  
+
 
