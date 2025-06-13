@@ -10,27 +10,14 @@ module.exports = function (app) {
     secure: false,
     logLevel: 'debug',
     onProxyReq: (proxyReq, req) => {
+      // Remove cache-control header
+      proxyReq.removeHeader('cache-control');
       console.log(`[Proxy] ${req.method} ${req.url} -> ${proxyReq.path}`)
     },
-    onError: (err, req, res) => {
-      if (err.code === 'ECONNREFUSED') {
-        // Fallback to production URL
-        const prodUrl = 'https://holo-henna.onrender.com'
-        res.redirect(`${prodUrl}/api/v1${req.url}`)
-        return
-      }
-      res.writeHead(500, {
-        'Content-Type': 'application/json',
-      })
-      res.end(
-        JSON.stringify({
-          success: false,
-          message: 'Backend server is not available.',
-          error:
-            process.env.NODE_ENV === 'development' ? err.message : undefined,
-        })
-      )
-    },
+    headers: {
+      'Access-Control-Allow-Origin': 'https://holo-henna-frontend.onrender.com',
+      'Access-Control-Allow-Credentials': 'true'
+    }
   }
 
   // Handle React routes that need direct access
@@ -129,3 +116,4 @@ module.exports = function (app) {
     })
   )
 }
+ 

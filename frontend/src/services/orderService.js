@@ -49,7 +49,6 @@ export class OrderService {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache',
         },
         credentials: 'include',
       })
@@ -102,3 +101,4 @@ export class OrderService {
     }
   }
 }
+

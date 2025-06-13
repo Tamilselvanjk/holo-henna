@@ -76,16 +76,16 @@ const Booking = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData(prevData => ({
+    setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }))
 
     // Clear error when field is edited
     if (errors[name]) {
-      setErrors(prevErrors => ({
+      setErrors((prevErrors) => ({
         ...prevErrors,
-        [name]: ''
+        [name]: '',
       }))
     }
 
@@ -97,7 +97,7 @@ const Booking = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErrors({})
-    
+
     try {
       // Validate form data
       BookingService.validateBookingData(formData)
@@ -111,11 +111,12 @@ const Booking = () => {
         service: {
           type: formData.service,
           amount: getServiceAmount(formData.service),
-          details: serviceOptions
-            .flatMap(group => group.options)
-            .find(option => option.value === formData.service)?.label || ''
+          details:
+            serviceOptions
+              .flatMap((group) => group.options)
+              .find((option) => option.value === formData.service)?.label || '',
         },
-        bookingDate: new Date().toISOString()
+        bookingDate: new Date().toISOString(),
       }
 
       const response = await BookingService.createBooking(bookingData)
@@ -127,27 +128,26 @@ const Booking = () => {
           email: '',
           phone: '',
           service: '',
-          customServiceDetail: ''
+          customServiceDetail: '',
         })
       } else {
         throw new Error(response.message || 'Failed to submit booking')
       }
-
     } catch (error) {
       console.error('Booking error:', error)
-      
+
       if (error.message.includes('Missing required fields')) {
         const missingFields = error.message
           .replace('Missing required fields: ', '')
           .split(', ')
-        
+
         const newErrors = {}
-        missingFields.forEach(field => {
+        missingFields.forEach((field) => {
           newErrors[field] = 'This field is required'
         })
         setErrors(newErrors)
       }
-      
+
       toast.error(error.message || 'Failed to submit booking')
     } finally {
       setLoading(false)
@@ -225,7 +225,9 @@ const Booking = () => {
                     onChange={handleChange}
                     required
                   />
-                  {errors.fullName && <span className="error-message">{errors.fullName}</span>}
+                  {errors.fullName && (
+                    <span className="error-message">{errors.fullName}</span>
+                  )}
                 </div>
 
                 <div className="form-group">
@@ -242,7 +244,9 @@ const Booking = () => {
                     onChange={handleChange}
                     required
                   />
-                  {errors.phone && <span className="error-message">{errors.phone}</span>}
+                  {errors.phone && (
+                    <span className="error-message">{errors.phone}</span>
+                  )}
                 </div>
               </div>
 
@@ -260,7 +264,9 @@ const Booking = () => {
                   onChange={handleChange}
                   required
                 />
-                {errors.email && <span className="error-message">{errors.email}</span>}
+                {errors.email && (
+                  <span className="error-message">{errors.email}</span>
+                )}
               </div>
 
               <div className="form-group service-selection">
@@ -270,7 +276,9 @@ const Booking = () => {
                 </label>
                 <select
                   name="service"
-                  className={`form-control service-select ${errors.service ? 'error' : ''}`}
+                  className={`form-control service-select ${
+                    errors.service ? 'error' : ''
+                  }`}
                   value={formData.service}
                   onChange={handleChange}
                   required
@@ -286,14 +294,12 @@ const Booking = () => {
                     </optgroup>
                   ))}
                 </select>
-                {errors.service && <span className="error-message">{errors.service}</span>}
+                {errors.service && (
+                  <span className="error-message">{errors.service}</span>
+                )}
               </div>
 
-              <button 
-                type="submit" 
-                className="submit-btn" 
-                disabled={loading}
-              >
+              <button type="submit" className="submit-btn" disabled={loading}>
                 <span>{loading ? 'Submitting...' : 'Book Appointment'}</span>
                 {!loading && <i className="fas fa-arrow-right"></i>}
               </button>
