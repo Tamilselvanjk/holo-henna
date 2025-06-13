@@ -5,7 +5,13 @@ import { initializeRazorpay } from '../../../services/razorpayService'
 import { useNavigate } from 'react-router-dom'
 import './PaymentForm.css'
 
-const PaymentForm = ({ total, onBack, cartItems, shippingAddress, onOrderComplete }) => {
+const PaymentForm = ({
+  total,
+  onBack,
+  cartItems,
+  shippingAddress,
+  onOrderComplete,
+}) => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 

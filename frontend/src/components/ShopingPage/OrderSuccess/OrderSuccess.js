@@ -15,7 +15,7 @@ const OrderSuccess = () => {
       style: 'currency',
       currency: 'INR',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(amount)
   }
 
@@ -71,7 +71,9 @@ const OrderSuccess = () => {
     return (
       <div className="error-container">
         <h2>Order Not Found</h2>
-        <Link to="/" className="back-to-home">Return to Home</Link>
+        <Link to="/" className="back-to-home">
+          Return to Home
+        </Link>
       </div>
     )
   }
@@ -101,7 +103,6 @@ const OrderSuccess = () => {
                       alt={item.product?.name || 'Product'}
                       onError={(e) => {
                         e.target.onerror = null
-                        
                       }}
                     />
                   </div>
@@ -118,10 +119,13 @@ const OrderSuccess = () => {
           <div className="shipping-info">
             <h4>Shipping Address</h4>
             <div className="address-details">
-              <p><strong>{orderDetails?.shippingAddress?.name}</strong></p>
+              <p>
+                <strong>{orderDetails?.shippingAddress?.name}</strong>
+              </p>
               <p>{orderDetails?.shippingAddress?.street}</p>
               <p>
-                {orderDetails?.shippingAddress?.city}, {orderDetails?.shippingAddress?.state}
+                {orderDetails?.shippingAddress?.city},{' '}
+                {orderDetails?.shippingAddress?.state}
               </p>
               <p>PIN: {orderDetails?.shippingAddress?.pincode}</p>
               <p>Mobile: {orderDetails?.shippingAddress?.mobile}</p>
@@ -129,7 +133,8 @@ const OrderSuccess = () => {
           </div>
 
           <div className="order-total">
-            Total Amount: <span>{formatCurrency(orderDetails?.totalAmount || 0)}</span>
+            Total Amount:{' '}
+            <span>{formatCurrency(orderDetails?.totalAmount || 0)}</span>
           </div>
         </div>
 

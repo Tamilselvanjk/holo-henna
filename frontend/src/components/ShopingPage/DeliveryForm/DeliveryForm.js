@@ -81,7 +81,9 @@ const DeliveryForm = ({
       return
     }
 
-    const selectedAddress = addresses.find((addr) => addr.id === selectedAddressId)
+    const selectedAddress = addresses.find(
+      (addr) => addr.id === selectedAddressId
+    )
     if (!selectedAddress) {
       setError('Selected address not found')
       return
@@ -456,7 +458,9 @@ const AddressInputForm = ({ onSubmit }) => {
           type="text"
           placeholder="PIN Code"
           value={formData.pincode}
-          onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, pincode: e.target.value })
+          }
           required
           pattern="\d{6}"
         />
@@ -520,7 +524,9 @@ const DeliveryDetailsForm = ({ onSubmit, onBack }) => {
         <label>Special Instructions (Optional)</label>
         <textarea
           value={details.instructions}
-          onChange={(e) => setDetails({ ...details, instructions: e.target.value })}
+          onChange={(e) =>
+            setDetails({ ...details, instructions: e.target.value })
+          }
           placeholder="Any special instructions for delivery"
         />
       </div>

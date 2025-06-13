@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import './Booking.css'
 import { toast } from 'react-toastify'
-import { API_ENDPOINTS, apiRequest } from '../../../config/api'
+import { BookingService } from '../../../services/bookingService'
 
 const serviceOptions = [
   {
@@ -72,13 +72,22 @@ const Booking = () => {
     customServiceDetail: '',
   })
   const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState({})
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData({
-      ...formData,
+    setFormData(prevData => ({
+      ...prevData,
       [name]: value,
-    })
+    }))
+
+    // Clear error when field is edited
+    if (errors[name]) {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        [name]: ''
+      }))
+    }
 
     if (name === 'service') {
       setShowCustomInput(value === 'custom')
@@ -87,15 +96,14 @@ const Booking = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setErrors({})
     
-    if (!formData.fullName || !formData.email || !formData.phone || !formData.service) {
-      toast.error('Please fill all required fields')
-      return
-    }
-
-    setLoading(true)
-
     try {
+      // Validate form data
+      BookingService.validateBookingData(formData)
+
+      setLoading(true)
+
       const bookingData = {
         fullName: formData.fullName,
         email: formData.email,
@@ -110,36 +118,36 @@ const Booking = () => {
         bookingDate: new Date().toISOString()
       }
 
-      const apiUrl = process.env.NODE_ENV === 'development' 
-        ? 'http://localhost:3000/api/v1/bookings'
-        : 'https://holo-henna-frontend.onrender.com/api/v1/bookings'
+      const response = await BookingService.createBooking(bookingData)
 
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(bookingData)
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to submit booking')
+      if (response.success) {
+        toast.success('Booking submitted successfully!')
+        setFormData({
+          fullName: '',
+          email: '',
+          phone: '',
+          service: '',
+          customServiceDetail: ''
+        })
+      } else {
+        throw new Error(response.message || 'Failed to submit booking')
       }
-
-      toast.success('Booking submitted successfully!')
-      setFormData({
-        fullName: '',
-        email: '',
-        phone: '',
-        service: '',
-        customServiceDetail: ''
-      })
 
     } catch (error) {
       console.error('Booking error:', error)
+      
+      if (error.message.includes('Missing required fields')) {
+        const missingFields = error.message
+          .replace('Missing required fields: ', '')
+          .split(', ')
+        
+        const newErrors = {}
+        missingFields.forEach(field => {
+          newErrors[field] = 'This field is required'
+        })
+        setErrors(newErrors)
+      }
+      
       toast.error(error.message || 'Failed to submit booking')
     } finally {
       setLoading(false)
@@ -211,12 +219,13 @@ const Booking = () => {
                   <input
                     type="text"
                     name="fullName"
-                    className="form-control"
+                    className={`form-control ${errors.fullName ? 'error' : ''}`}
                     placeholder="Your Name"
                     value={formData.fullName}
                     onChange={handleChange}
                     required
                   />
+                  {errors.fullName && <span className="error-message">{errors.fullName}</span>}
                 </div>
 
                 <div className="form-group">
@@ -227,12 +236,13 @@ const Booking = () => {
                   <input
                     type="tel"
                     name="phone"
-                    className="form-control"
+                    className={`form-control ${errors.phone ? 'error' : ''}`}
                     placeholder="Your Phone Number"
                     value={formData.phone}
                     onChange={handleChange}
                     required
                   />
+                  {errors.phone && <span className="error-message">{errors.phone}</span>}
                 </div>
               </div>
 
@@ -244,12 +254,13 @@ const Booking = () => {
                 <input
                   type="email"
                   name="email"
-                  className="form-control"
+                  className={`form-control ${errors.email ? 'error' : ''}`}
                   placeholder="Your Email"
                   value={formData.email}
                   onChange={handleChange}
                   required
                 />
+                {errors.email && <span className="error-message">{errors.email}</span>}
               </div>
 
               <div className="form-group service-selection">
@@ -259,7 +270,7 @@ const Booking = () => {
                 </label>
                 <select
                   name="service"
-                  className="form-control service-select"
+                  className={`form-control service-select ${errors.service ? 'error' : ''}`}
                   value={formData.service}
                   onChange={handleChange}
                   required
@@ -275,6 +286,7 @@ const Booking = () => {
                     </optgroup>
                   ))}
                 </select>
+                {errors.service && <span className="error-message">{errors.service}</span>}
               </div>
 
               <button 
