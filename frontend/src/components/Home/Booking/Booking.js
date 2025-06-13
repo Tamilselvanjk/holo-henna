@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import './Booking.css'
 import { toast } from 'react-toastify'
-import { API_ENDPOINTS, apiRequest } from '../../../config/api'
+import './Booking.css'
 
 const serviceOptions = [
   {
@@ -87,13 +86,8 @@ const Booking = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
-    if (!formData.fullName || !formData.email || !formData.phone || !formData.service) {
-      toast.error('Please fill all required fields')
-      return
-    }
-
     setLoading(true)
+    const processingToast = toast.loading('Submitting booking...')
 
     try {
       const bookingData = {
@@ -110,7 +104,7 @@ const Booking = () => {
         bookingDate: new Date().toISOString()
       }
 
-      const apiUrl = process.env.NODE_ENV === 'development' 
+      const apiUrl = process.env.NODE_ENV === 'development'
         ? 'http://localhost:3000/api/v1/bookings'
         : 'https://holo-henna-frontend.onrender.com/api/v1/bookings'
 
@@ -118,18 +112,37 @@ const Booking = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache'
         },
+        credentials: 'include',
         body: JSON.stringify(bookingData)
       })
 
-      const data = await response.json()
+      const text = await response.text()
+      
+      // Check if response is empty
+      if (!text) {
+        throw new Error('Empty response from server')
+      }
+
+      // Try to parse JSON response
+      let data
+      try {
+        data = JSON.parse(text)
+      } catch (e) {
+        console.error('JSON Parse Error:', e, 'Response Text:', text)
+        throw new Error('Invalid response from server')
+      }
 
       if (!response.ok) {
         throw new Error(data.message || 'Failed to submit booking')
       }
 
+      toast.dismiss(processingToast)
       toast.success('Booking submitted successfully!')
+      
+      // Reset form
       setFormData({
         fullName: '',
         email: '',
@@ -140,6 +153,7 @@ const Booking = () => {
 
     } catch (error) {
       console.error('Booking error:', error)
+      toast.dismiss(processingToast)
       toast.error(error.message || 'Failed to submit booking')
     } finally {
       setLoading(false)

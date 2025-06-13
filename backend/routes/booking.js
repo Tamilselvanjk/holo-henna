@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const { createBooking, getAllBookings } = require('../controllers/bookingController')
 
-// Remove /bookings from route as it's already included in app.js
+// Ensure routes are properly defined
 router.post('/', createBooking)
 router.get('/', getAllBookings)
 

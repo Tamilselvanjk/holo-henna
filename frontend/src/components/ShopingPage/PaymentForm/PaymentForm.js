@@ -11,11 +11,13 @@ const PaymentForm = ({ total, onBack, cartItems, shippingAddress, onOrderComplet
 
   const handleRazorpayPayment = async () => {
     setLoading(true)
-    const processingToast = toast.loading('Initializing payment...', {
-      position: 'top-center',
-    })
+    let processingToast = null
 
     try {
+      processingToast = toast.loading('Initializing payment...', {
+        position: 'top-center',
+      })
+
       const razorpayResponse = await initializeRazorpay(total, {
         prefill: {
           name: shippingAddress.name,
@@ -47,8 +49,8 @@ const PaymentForm = ({ total, onBack, cartItems, shippingAddress, onOrderComplet
 
       const response = await OrderService.createOrder(orderData)
 
-      if (!response || !response.success) {
-        throw new Error(response?.message || 'Order creation failed')
+      if (!response?.success || !response?.data?._id) {
+        throw new Error('Order creation failed - Invalid response')
       }
 
       toast.dismiss(processingToast)

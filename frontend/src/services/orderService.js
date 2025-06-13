@@ -5,36 +5,45 @@ const BASE_URL = process.env.NODE_ENV === 'development'
 export class OrderService {
   static async createOrder(orderData) {
     try {
-      console.log('Creating order:', orderData);
-
       const response = await fetch(`${BASE_URL}/orders/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Origin': window.location.origin
         },
         credentials: 'include',
-        body: JSON.stringify(orderData)
+        body: JSON.stringify({
+          ...orderData,
+          updateStock: true
+        })
       });
 
-      // First check if response is ok
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      // Try to parse response carefully
-      let data;
+      // Get response text first
       const text = await response.text();
       
-      try {
-        data = text ? JSON.parse(text) : null;
-      } catch (e) {
-        console.error('JSON Parse Error:', e, 'Response Text:', text);
-        throw new Error('Invalid response format from server');
+      // Check if response is empty
+      if (!text) {
+        throw new Error('Server returned empty response');
       }
 
-      if (!data) {
-        throw new Error('Empty response from server');
+      // Try to parse JSON
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        console.error('JSON Parse Error:', e, 'Response Text:', text);
+        throw new Error('Invalid JSON response from server');
+      }
+
+      // Check response status
+      if (!response.ok) {
+        throw new Error(data?.message || `HTTP error! status: ${response.status}`);
+      }
+
+      // Validate response data
+      if (!data || (!data.data && !data.success)) {
+        throw new Error('Invalid response format from server');
       }
 
       return {
