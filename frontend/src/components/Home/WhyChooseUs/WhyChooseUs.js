@@ -4,12 +4,12 @@ import './WhyChooseUs.css'
 const WhyChooseUs = () => {
   const cards = [
     {
-      img: './webimg/experience.jpg',
+      img: './webimg/exportExperience.jpg',
       title: 'Expertise and Experience',
       text: 'With a decade of experience, our Mehndi artistry combines traditional techniques with contemporary designs...',
     },
     {
-      img: './webimg/customize.jpg',
+      img: './webimg/customizedDesigns.jpg',
       title: 'Customized Designs',
       text: "We offer personalized Mehndi designs tailored to each client's preferences...",
     },
@@ -19,12 +19,12 @@ const WhyChooseUs = () => {
       text: 'Our commitment to quality is reflected in the use of 100% natural henna...',
     },
     {
-      img: './webimg/timeseries.jpg',
+      img: './webimg/timelyServices.jpg',
       title: 'Timely Services',
       text: 'We value your time and guarantee prompt service delivery...',
     },
     {
-      img: './webimg/desginExplore.jpg',
+      img: './webimg/designExploration.jpg',
       title: 'Design Exploration & Trial',
       text: 'Before applying Mehndi, we engage in an in-depth design exploration...',
     },

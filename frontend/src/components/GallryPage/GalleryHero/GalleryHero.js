@@ -34,7 +34,7 @@ const HeroSection = () => {
             }
             onClick={() => scrollToSection('illustration-infusion')}
           >
-            Bridal
+            Creative
           </button>
           <button
             className={activeSection === 'bridal-blooms' ? 'active' : ''}
@@ -46,7 +46,7 @@ const HeroSection = () => {
             className={activeSection === 'bridal-bliss' ? 'active' : ''}
             onClick={() => scrollToSection('bridal-bliss')}
           >
-            Creative
+            Bridal
           </button>
           <button
             className={activeSection === 'featured-collections' ? 'active' : ''}

@@ -27,7 +27,7 @@
       }
     ],
     "category": "Bridal Henna",
-    "rating": 5,
+    "ratings": 5,
     "reviews": 89,
     "numOfReviews": 89,
     "description": "Complete bridal henna kit with premium cones and accessories",
@@ -45,7 +45,7 @@
       }
     ],
     "category": "Traditional",
-    "rating": 4.2,
+    "ratings": 4.2,
     "reviews": 56,
     "numOfReviews": 56,
     "description": "Pure natural black henna powder for deep, rich color",
@@ -63,7 +63,7 @@
       }
     ],
     "category": "Modern",
-    "rating": 4.7,
+    "ratings": 4.7,
     "reviews": 42,
     "numOfReviews": 42,
     "description": "Set of modern design stencils for quick and elegant patterns",
@@ -81,7 +81,7 @@
       }
     ],
     "category": "Traditional",
-    "rating": 4.8,
+    "ratings": 4.8,
     "reviews": 95,
     "numOfReviews": 95,
     "description": "Pure organic henna powder for natural and safe application",
@@ -99,7 +99,7 @@
       }
     ],
     "category": "Arabic",
-    "rating": 4.6,
+    "ratings": 4.6,
     "reviews": 73,
     "numOfReviews": 73,
     "description": "Complete kit for creating intricate Arabic henna designs",
@@ -113,11 +113,11 @@
     "price": 29.99,
     "images": [
       {
-        "image": "/webimg/floral1.jpeg"
+        "image": "/webimg/product5.jpg"
       }
     ],
     "category": "Floral",
-    "rating": 4.4,
+    "ratings": 4.4,
     "reviews": 38,
     "numOfReviews": 38,
     "description": "Collection of beautiful floral henna patterns and designs",
@@ -131,11 +131,11 @@
     "price": 79.99,
     "images": [
       {
-        "image": "/webimg/custom1.jpeg"
+        "image": "/webimg/product6.jpg"
       }
     ],
     "category": "Custom Designs",
-    "rating": 4.9,
+    "ratings": 4.9,
     "reviews": 25,
     "numOfReviews": 25,
     "description": "Personalized henna design consultation and service",
@@ -153,12 +153,12 @@
       }
     ],
     "category": "Powder",
-    "rating": 4,
+    "ratings": 4,
     "reviews": 0,
     "numOfReviews": 0,
     "description": "100% pure and organic henna powder for hair and hand decoration",
     "seller": "Elegant Mehandi Store",
-    "stock": 1,
+    "stock": 10,
     "createdAt": "2025-02-12T12:21:44.063Z"
   }
 ]

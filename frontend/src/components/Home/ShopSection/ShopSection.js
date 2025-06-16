@@ -37,7 +37,7 @@ const ShopSection = () => {
       description:
         'Traditional henna patterns from various cultures and traditions.',
       price: '$50',
-      image: '/webimg/1.jpg', 
+      image: '/webimg/product3.png', 
       alt: 'Cultural or Traditional Designs',
     },
     {

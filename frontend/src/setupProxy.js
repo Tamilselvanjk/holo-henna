@@ -11,13 +11,13 @@ module.exports = function (app) {
     logLevel: 'debug',
     onProxyReq: (proxyReq, req) => {
       // Remove cache-control header
-      proxyReq.removeHeader('cache-control');
+      proxyReq.removeHeader('cache-control')
       console.log(`[Proxy] ${req.method} ${req.url} -> ${proxyReq.path}`)
     },
     headers: {
       'Access-Control-Allow-Origin': 'https://holo-henna-frontend.onrender.com',
-      'Access-Control-Allow-Credentials': 'true'
-    }
+      'Access-Control-Allow-Credentials': 'true',
+    },
   }
 
   // Handle React routes that need direct access
@@ -116,4 +116,3 @@ module.exports = function (app) {
     })
   )
 }
- 
