@@ -84,8 +84,7 @@ const galleryData = [
       {
         src: './webimg/feature4.jpeg',
         alt: 'Featured Mehndi Design',
-        content: 'Divine Adornments',
-      },
+         },
       {
         src: './webimg/feature5.jpeg',
         alt: 'Featured Mehndi Design',
