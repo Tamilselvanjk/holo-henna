@@ -77,7 +77,7 @@ const galleryData = [
     subtitle: 'Our Finest Artistry',
     designs: [
       {
-        src: './webimg/feature6.jpg',
+        src: './webimg/feature7.jpg',
         alt: 'Featured Mehndi Design',
         content: 'Custom Portraits',
       },
