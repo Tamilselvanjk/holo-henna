@@ -24,6 +24,21 @@ const galleryData = [
         src: './webimg/creative3.jpeg',
         alt: 'Creative Mehndi Design',
         content: 'Cultural Devotion',
+      },,
+      {
+        src: './webimg/creative4.jpg',
+        alt: 'Creative Mehndi Design',
+        content: 'Cultural Devotion',
+      },,
+      {
+        src: './webimg/creative5.jpeg',
+        alt: 'Creative Mehndi Design',
+        content: 'Cultural Devotion',
+      },,
+      {
+        src: './webimg/creative6.jpeg',
+        alt: 'Creative Mehndi Design',
+        content: 'Cultural Devotion',
       },
     ],
   },
@@ -65,7 +80,7 @@ const galleryData = [
         content: 'Majestic King & Queen',
       },
       {
-        src: './webimg/custom3.jpg',
+        src: './webimg/custom3.jpeg',
         alt: 'Portrait Mehndi Design',
         content: 'True Faces of Love',
       },

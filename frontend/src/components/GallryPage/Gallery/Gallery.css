@@ -11,7 +11,6 @@ html {
 .gallery-section {
   opacity: 0;
   margin-top: 100px;
- 
   transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 
@@ -232,7 +231,7 @@ html {
 }
 
 .gallery-section:nth-of-type(2) .card-image {
-  height: 350px;
+  height:650px;
 }
 
 .gallery-section:nth-of-type(4) .card-image {

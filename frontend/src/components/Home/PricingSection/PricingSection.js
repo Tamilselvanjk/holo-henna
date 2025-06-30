@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import './PricingSection.css'
 
 const PricingSection = () => {
@@ -42,6 +42,10 @@ const PricingSection = () => {
     },
   ]
 
+  // Track which plan was chosen for feedback
+  const [chosenPlan, setChosenPlan] = useState(null)
+  const [showMessage, setShowMessage] = useState(false)
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -66,8 +70,9 @@ const PricingSection = () => {
   }, [])
 
   const handleChoosePlan = (planTitle) => {
-    // Add your plan selection logic here
-    console.log(`Selected plan: ${planTitle}`)
+    setChosenPlan(planTitle)
+    setShowMessage(true)
+    setTimeout(() => setShowMessage(false), 2500) // Hide after 2.5s
   }
 
   return (
@@ -75,10 +80,10 @@ const PricingSection = () => {
       <div className="container">
         <div className="section-title">
           <div className='price-head'>
-          <h2>Choose Your Perfect Package</h2>
-          <p>Compare our most popular packages to find the right one for you</p>
-        </div>
+            <h2>Choose Your Perfect Package</h2>
+            <p>Compare our most popular packages to find the right one for you</p>
           </div>
+        </div>
         <div className="pricing-table">
           {plans.map((plan, index) => (
             <div
@@ -108,6 +113,12 @@ const PricingSection = () => {
               >
                 Choose {plan.title.split(' ')[0]}
               </button>
+              {/* Creative feedback message */}
+              {showMessage && chosenPlan === plan.title && (
+                <div className="plan-feedback">
+                  🎉 You selected <b>{plan.title}</b>! We'll help you make your event special.
+                </div>
+              )}
             </div>
           ))}
         </div>
