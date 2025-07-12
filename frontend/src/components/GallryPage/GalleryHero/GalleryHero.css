@@ -1,6 +1,6 @@
 /* Gallery Hero Section */
 .gallery-hero {
-  background: url('/public/webimg/pexels-photo-2857306.jpeg') center/cover
+  background: url('/public/webimg/gallery.JPG') center/cover
     no-repeat;
   height: 100vh;
   display: flex;

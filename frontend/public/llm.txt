@@ -1,0 +1,15 @@
+Website: Holo Henna
+Description: Holo Henna is an online store offering premium henna products and professional henna services.
+
+Main Pages:
+- https://holo-henna-frontend.onrender.com/home
+- https://holo-henna-frontend.onrender.com/contact
+- https://holo-henna-frontend.onrender.com/shop
+
+
+Contact Information:
+Email:tamiljk63@gmail.com
+
+Policies:
+Privacy Policy: https://holo-henna-frontend.onrender.com/privacy-policy
+Terms of Service: https://holo-henna-frontend.onrender.com/terms-of-service

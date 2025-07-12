@@ -1,9 +1,7 @@
 .payment-form {
   max-width: 480px;
-  margin: 1.5rem auto;
-  padding: 1.5rem 2rem;
+  padding: 0.5rem 2rem;
   background: linear-gradient(120deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 2rem;
   box-shadow: 0 12px 36px rgba(44, 62, 80, 0.13),
     0 1.5px 6px rgba(44, 62, 80, 0.08);
   position: relative;
@@ -212,13 +210,13 @@
 .button-group {
   display: flex;
   gap: 1rem;
-  margin-top: 2rem;
   justify-content: center;
 }
 
 .back-btn {
   background: #f1f5f9;
   color: #6366f1;
+ 
   border: none;
   border-radius: 0.7rem;
   padding: 0.9rem 2rem;

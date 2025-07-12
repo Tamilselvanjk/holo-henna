@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { ProductService } from '../../../services/productService'
 import { useCart } from '../../../context/CartContext'
-import { categories } from '../../../constants/categories'
+import { categories } from '../constants/categories'
 import './ProductCards.css'
 import { toast } from 'react-toastify'
 

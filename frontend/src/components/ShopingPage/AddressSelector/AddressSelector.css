@@ -1,6 +1,6 @@
 .address-selector {
   position: relative;
-  width: 100%;
+  width: 50%;
 }
 
 .dropdown-toggle {
@@ -54,7 +54,7 @@
 .address-details {
   font-size: 0.9em;
   color: #666;
-  width: 100%;
+  
   overflow: hidden;
 }
 

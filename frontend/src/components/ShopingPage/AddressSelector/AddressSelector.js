@@ -98,8 +98,8 @@ const AddressSelector = () => {
   }
 
   return (
-    <div className="address-selector">
-      <button className="dropdown-toggle" onClick={toggleDropdown}>
+    <div className="address-selector  mobile-bottom-row ">
+      <button className="dropdown-toggle " onClick={toggleDropdown}>
         <div className="toggle-content">
           <div className="address-icon">
             <i className="fas fa-map-marker-alt"></i>

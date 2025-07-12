@@ -6,8 +6,8 @@ import Categories from '../components/ShopingPage/Categories/Categories'
 import ProductCards from '../components/ShopingPage/ProductCards/ProductCards'
 import Cart from '../components/ShopingPage/Cart/Cart'
 import Toast from '../components/ShopingPage/Toast/Toast'
-import './Shop.css'
-import Header from '../components/Home/Header/Header'
+
+
 
 const Shop = () => {
   const [cartItems, setCartItems] = useState([])

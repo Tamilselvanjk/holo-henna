@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { categories } from '../../../constants/categories'
+import { categories } from '../constants/categories'
 import './Categories.css'
 
 const Categories = ({ onCategoryChange }) => {

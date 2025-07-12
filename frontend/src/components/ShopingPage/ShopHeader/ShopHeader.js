@@ -50,7 +50,7 @@ const ShopHeader = ({ onCartClick, onSearch }) => {
             />
           </div>
 
-          <button className="cart-button" onClick={onCartClick}>
+          <button className="cart-button  mobile-bottom-row " onClick={onCartClick}>
             <i className="fas fa-shopping-cart"></i>
             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
           </button>

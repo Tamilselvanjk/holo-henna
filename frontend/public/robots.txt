@@ -1,6 +1,16 @@
 User-agent: OAI-SearchBot
-Allow: /
+Allow: /home
 
-# Allow all other bots as usual (optional)
+Sitemap: /sitemap.xml
+
 User-agent: *
-Disallow:
+Allow: /orders
+
+# Allow access to important pages
+Allow: /home
+Allow: /contact
+Allow: /shop
+
+
+# Add more important pages as needed
+# Allow: /gallery

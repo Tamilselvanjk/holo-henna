@@ -1,7 +1,8 @@
 .header {
-  background: white;
+ 
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
+
   width: 100%;
   transition: position 0.3s ease, box-shadow 0.3s ease;
   z-index: 100;
@@ -23,18 +24,27 @@ body.has-sticky-header {
 }
 
 .header-actions {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 2rem;
   padding: 1rem 0;
 }
 
+.address-selector {
+  flex: 0 0 auto;
+  min-width: 260px;
+  max-width: 350px;
+}
+
 .search-wrapper {
-  position: relative;
+  flex: 1 1 0;
   max-width: 600px;
-  width: 100%;
-  margin: 0 auto;
+  min-width: 220px;
+  margin: 0 2rem;
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
 .search-wrapper i {
@@ -52,15 +62,11 @@ body.has-sticky-header {
   border-radius: 25px;
   font-size: 0.95rem;
   transition: all 0.3s ease;
-}
-
-.search-wrapper input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(90, 61, 43, 0.1);
+  min-width: 0;
 }
 
 .cart-button {
+  flex: 0 0 auto;
   position: relative;
   padding: 8px 12px;
   background: transparent;
@@ -107,15 +113,62 @@ body.has-sticky-header {
 
 @media (max-width: 768px) {
   .header-actions {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
     gap: 1rem;
+    width: 100%;
+    padding: 0;
   }
 
   .search-wrapper {
     order: -1;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 1rem 0;
   }
 
   .cart-text {
     display: none;
   }
+
+  .address-selector {
+    align-self: flex-start;
+    max-width: 60%;
+    min-width: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .cart-button {
+    align-self: flex-end;
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.3rem;
+    width: 100%;
+    padding: 0;
+  }
+  .search-wrapper {
+    width: 100%;
+    max-width: 100%;
+    margin: 0.5rem 0;
+  }
+  .cart-text {
+    display: none;
+  }
+
+  .mobile-bottom-row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+    align-items: center;
+   
+  }
+  
+  
 }
