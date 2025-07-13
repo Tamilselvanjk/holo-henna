@@ -27,15 +27,28 @@ const Header = () => {
     }
   }
 
+  // Always prefer Google account image if available
+
   const getProfileImage = (user) => {
-    if (user?.photoURL) return user.photoURL
-    if (user?.displayName) {
-      return `https://ui-avatars.com/api/?name=${encodeURIComponent(
-        user.displayName
-      )}&size=80&background=4285f4&color=fff`
+    // Prefer Google account image from providerData
+    if (user?.providerData && user.providerData.length > 0) {
+      const googleProfile = user.providerData.find(
+        (provider) => provider.providerId === 'google.com' && provider.photoURL
+      );
+      if (googleProfile && googleProfile.photoURL) {
+        return googleProfile.photoURL;
+      }
     }
-    return '/webimg/default-avatar.png'
+    // Fallback to user.photoURL if present
+    if (user?.photoURL) return user.photoURL;
+    // If no image, return null (we'll handle this in the img tag)
+    return null;
   }
+
+   const getDisplayName = (user) => {
+    return user?.displayName || user?.email?.split('@')[0] || 'User';
+  }
+
 
   const handleLogin = () => {
     navigate('/login', { replace: true })
@@ -102,11 +115,11 @@ const Header = () => {
                 >
                   <img
                     src={getProfileImage(user)}
-                    alt={user.displayName || 'Profile'}
-                    className="header-profile-image"
+                    alt={getDisplayName(user)}
+                    className="profile-avatar"
                     onError={(e) => {
-                      e.target.onerror = null
-                      e.target.src = '/webimg/default-avatar.png'
+                      e.target.onerror = null;
+                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(getDisplayName(user))}&size=200`;
                     }}
                   />
                 </div>
