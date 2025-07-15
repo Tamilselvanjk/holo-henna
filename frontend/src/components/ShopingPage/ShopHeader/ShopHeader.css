@@ -1,8 +1,13 @@
+.shop-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  
+}
+
 .header {
- 
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
-
   width: 100%;
   transition: position 0.3s ease, box-shadow 0.3s ease;
   z-index: 100;
@@ -13,7 +18,7 @@
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(238, 238, 238, 0.95);
   backdrop-filter: blur(8px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
