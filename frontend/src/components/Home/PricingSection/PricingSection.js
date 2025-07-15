@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './PricingSection.css'
 
 const PricingSection = () => {
@@ -45,6 +46,7 @@ const PricingSection = () => {
   // Track which plan was chosen for feedback
   const [chosenPlan, setChosenPlan] = useState(null)
   const [showMessage, setShowMessage] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -72,7 +74,9 @@ const PricingSection = () => {
   const handleChoosePlan = (planTitle) => {
     setChosenPlan(planTitle)
     setShowMessage(true)
-    setTimeout(() => setShowMessage(false), 2500) // Hide after 2.5s
+    setTimeout(() => setShowMessage(false), 2500)
+    // Navigate to gallery and scroll to PaymentTable
+    navigate('/gallery', { state: { scrollTo: 'payment-table' } })
   }
 
   return (

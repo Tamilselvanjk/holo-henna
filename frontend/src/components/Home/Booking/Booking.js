@@ -94,9 +94,44 @@ const Booking = () => {
     }
   }
 
+  const validateForm = (data) => {
+    const errors = {}
+    // Full name required
+    if (!data.fullName.trim()) {
+      errors.fullName = 'Full name is required'
+    }
+    // Phone: required, must be 10 digits
+    if (!data.phone.trim()) {
+      errors.phone = 'Phone number is required'
+    } else if (!/^\d{10}$/.test(data.phone.trim())) {
+      errors.phone = 'Phone number must be exactly 10 digits'
+    }
+    // Email: required, must be valid
+    if (!data.email.trim()) {
+      errors.email = 'Email is required'
+    } else if (
+      !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(data.email.trim())
+    ) {
+      errors.email = 'Enter a valid email address'
+    }
+    // Service required
+    if (!data.service) {
+      errors.service = 'Please select a service'
+    }
+    return errors
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErrors({})
+
+    // Validate form fields
+    const validationErrors = validateForm(formData)
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors)
+      toast.error('Please correct the errors in the form.')
+      return
+    }
 
     try {
       // Validate form data
@@ -231,17 +266,22 @@ const Booking = () => {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">
+                    <label className="form-label">
                     <i className="fas fa-phone"></i>
                     Phone
                   </label>
-                  <input
+                                    <input
                     type="tel"
                     name="phone"
                     className={`form-control ${errors.phone ? 'error' : ''}`}
                     placeholder="Your Phone Number"
                     value={formData.phone}
                     onChange={handleChange}
+                    onInput={(e) => {
+                      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                    }}
+                    pattern="[0-9]{10}"
+                    maxLength="10"
                     required
                   />
                   {errors.phone && (
