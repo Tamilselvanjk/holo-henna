@@ -243,7 +243,7 @@ const ProductCards = ({ category = null, searchTerm = '' }) => {
                 </div>
                 {renderRatingAndReviews(product)}
                 <div className="product-price">
-                  <span className="price">${product.price.toFixed(2)}</span>
+                  <span className="price">₹{product.price.toFixed(2)}</span>
                 </div>
                 <div className="stock-status">
                   {renderStockStatus(product.stock)}
