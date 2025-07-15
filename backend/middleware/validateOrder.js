@@ -40,6 +40,25 @@ const validateOrder = (req, res, next) => {
     })
   }
 
+  // Validate totalAmount
+  if (
+    typeof req.body.totalAmount !== 'number' ||
+    req.body.totalAmount <= 0
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: 'Total amount must be a positive number',
+    })
+  }
+
+  // Validate paymentMethod
+  if (!req.body.paymentMethod || typeof req.body.paymentMethod !== 'string') {
+    return res.status(400).json({
+      success: false,
+      message: 'Payment method is required',
+    })
+  }
+
   next()
 }
 

@@ -21,10 +21,18 @@ exports.createOrder = async (req, res) => {
     for (const item of req.body.orderItems) {
       const product = await Product.findById(item.product).session(session)
       if (!product) {
-        throw new Error(`Product ${item.product} not found`)
+        await session.abortTransaction()
+        return res.status(404).json({
+          success: false,
+          message: `Product not found: ${item.product}`,
+        })
       }
       if (product.stock < item.quantity) {
-        throw new Error(`Insufficient stock for product ${product.name}`)
+        await session.abortTransaction()
+        return res.status(400).json({
+          success: false,
+          message: `Insufficient stock for product: ${product.name}`,
+        })
       }
     }
 

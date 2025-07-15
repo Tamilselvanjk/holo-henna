@@ -10,7 +10,11 @@ const PaymentService = {
         amount: paymentData.amount,
       }
     } catch (error) {
-      throw new Error('Payment processing failed')
+      console.error('Payment processing error:', error)
+      return {
+        success: false,
+        message: 'Payment processing failed. Please try again.',
+      }
     }
   },
 
@@ -24,11 +28,19 @@ const PaymentService = {
         body: JSON.stringify(orderData),
       })
 
-      if (!response.ok) throw new Error('Order creation failed')
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Order creation failed:', errorText)
+        throw new Error('Order creation failed: ' + errorText)
+      }
       return response.json()
     } catch (error) {
       console.error('Create order error:', error)
-      throw error
+      return {
+        success: false,
+        message: 'Order creation failed. Please check your details and try again.',
+        error: error.message,
+      }
     }
   },
 }
