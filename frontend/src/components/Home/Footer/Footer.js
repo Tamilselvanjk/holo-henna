@@ -52,7 +52,7 @@ const Footer = () => {
               <FaYoutube />
             </a>
             <a
-              href="https://wa.me/918618439883"
+              href="https://wa.me/919600846892"
               target="_blank"
               rel="noopener noreferrer"
               className="social-icon"
@@ -111,7 +111,7 @@ const Footer = () => {
             </li>
             <li>
               <FaPhone className="icon" />
-              <span>(+91) 86184-39883</span>
+              <span>(+91) 96008-46892</span>
             </li>
           </ul>
         </div>
