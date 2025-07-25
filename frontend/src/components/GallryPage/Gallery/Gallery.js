@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver'
 import { useGalleryNavigation } from '../../hooks/useGalleryNavigation'
+import VideoGallery from '../VedioGallery/VideoGallery'
 import './Gallery.css'
 
 // Data structure for the gallery sections and designs
@@ -14,31 +15,37 @@ const galleryData = [
         src: './webimg/creative1.jpeg',
         alt: 'Creative Mehndi Design',
         content: 'Manga Marvel',
+        type: 'image'
       },
       {
         src: './webimg/creative2.jpeg',
         alt: 'Creative Mehndi Design',
         content: 'Hema Cherub',
+        type: 'image'
       },
       {
         src: './webimg/creative3.jpeg',
         alt: 'Creative Mehndi Design',
         content: 'Cultural Devotion',
-      },,
+        type: 'image'
+      },
       {
         src: './webimg/creative4.jpg',
         alt: 'Creative Mehndi Design',
-        content: 'Cultural Devotion',
-      },,
+        content: 'Floral Fusion',
+        type: 'image'
+      },
       {
         src: './webimg/creative5.jpeg',
         alt: 'Creative Mehndi Design',
-        content: 'Cultural Devotion',
-      },,
+        content: 'Geometric Grace',
+        type: 'image'
+      },
       {
-        src: './webimg/creative6.jpeg',
+        src: './webimg/SAR04303.jpg',
         alt: 'Creative Mehndi Design',
-        content: 'Cultural Devotion',
+        content: 'beautiful design',
+        type: 'image'
       },
     ],
   },
@@ -51,16 +58,19 @@ const galleryData = [
         src: './webimg/floral1.jpeg',
         alt: 'Floral Mehndi Design',
         content: 'Jhumkha',
+        type: 'image'
       },
       {
         src: './webimg/floral2.jpeg',
         alt: 'Floral Mehndi Design',
         content: 'Floral',
+        type: 'image'
       },
       {
         src: './webimg/floral3.jpeg',
         alt: 'Floral Mehndi Design',
         content: 'Blossomine',
+        type: 'image'
       },
     ],
   },
@@ -73,16 +83,25 @@ const galleryData = [
         src: './webimg/custom1.jpeg',
         alt: 'Bridal Mehndi Design',
         content: 'Elegant Floral Creations',
+        type: 'image'
       },
       {
         src: './webimg/custom2.jpg',
         alt: 'Royal Mehndi Design',
         content: 'Majestic King & Queen',
+        type: 'image'
       },
       {
         src: './webimg/custom3.jpeg',
         alt: 'Portrait Mehndi Design',
         content: 'True Faces of Love',
+        type: 'image'
+      },
+      {
+        src: './webimg/bridalblis.jpg',
+        alt: 'Portrait Mehndi Design',
+        content: 'vintage elegance',
+        type: 'image'
       },
     ],
   },
@@ -95,66 +114,114 @@ const galleryData = [
         src: './webimg/feature7.jpg',
         alt: 'Featured Mehndi Design',
         content: 'Custom Portraits',
+        type: 'image'
       },
       {
         src: './webimg/feature4.jpeg',
         alt: 'Featured Mehndi Design',
-         },
+        content: "Floral Elegance",
+        type: 'image'
+      },
       {
         src: './webimg/feature5.jpeg',
         alt: 'Featured Mehndi Design',
         content: "The Bride's Canvas",
+        type: 'image'
       },
     ],
   },
 ]
 
-// Component for the Image Modal
-const ImageModal = ({ isOpen, imageUrl, onClose }) => {
-  if (!isOpen) {
-    return null
-  }
+
+
+// Component for the Image/Video Modal
+const MediaModal = ({ isOpen, mediaUrl, mediaType, onClose }) => {
+  if (!isOpen) return null
 
   return (
-    <div className="modal" style={{ display: 'block' }}>
-      {' '}
-      {/* Added style to make it visible when open */}
-      <span className="close-modal" onClick={onClose}>
-        &times;
-      </span>
-      <img
-        className="modal-content"
-        id="modalImage"
-        src={imageUrl}
-        alt="Enlarged Mehndi Design"
-      />
-    </div>
-  )
-}
-
-const DesignCard = ({ design, onClick, index }) => {
-  const [imageLoaded, setImageLoaded] = useState(false)
-
-  return (
-    <div
-      className={`design-card ${imageLoaded ? 'loaded' : ''}`}
-      onClick={() => onClick(design.src)}
-      style={{ '--index': index }}
-    >
-      <img
-        src={process.env.PUBLIC_URL + design.src}
-        alt={design.alt}
-        className="card-image"
-        onLoad={() => setImageLoaded(true)}
-      />
-      <div className={`card-content ${imageLoaded ? 'visible' : ''}`}>
-        {design.content}
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <span className="close-modal" onClick={onClose}>
+          &times;
+        </span>
+        {mediaType === 'image' ? (
+          <img src={mediaUrl} alt="Enlarged Mehndi Design" />
+        ) : (
+          <video controls autoPlay>
+            <source src={mediaUrl} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        )}
       </div>
     </div>
   )
 }
 
-const GallerySection = ({ section, onImageClick }) => {
+const DesignCard = ({ design, onClick, index }) => {
+  const [isHovered, setIsHovered] = useState(false)
+  const [imageLoaded, setImageLoaded] = useState(false)
+  const videoRef = useRef(null)
+
+  const handleMouseEnter = () => {
+    setIsHovered(true)
+    if (design.type === 'video' && videoRef.current) {
+      // Only play if not already playing
+      if (videoRef.current.paused) {
+        // Use requestAnimationFrame to avoid play/pause race
+        window.requestAnimationFrame(() => {
+          videoRef.current.play().catch(() => {})
+        })
+      }
+    }
+  }
+
+  const handleMouseLeave = () => {
+    setIsHovered(false)
+    if (design.type === 'video' && videoRef.current) {
+      // Only pause if not already paused
+      if (!videoRef.current.paused) {
+        videoRef.current.pause()
+      }
+      videoRef.current.currentTime = 0
+    }
+  }
+
+  return (
+    <div
+      className={`design-card ${imageLoaded ? 'loaded' : ''} ${isHovered ? 'hovered' : ''}`}
+      onClick={() => onClick(design.src, design.type)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{ '--index': index }}
+    >
+      {design.type === 'image' ? (
+        <img
+          src={process.env.PUBLIC_URL + design.src}
+          alt={design.alt}
+          className="card-media"
+          onLoad={() => setImageLoaded(true)}
+        />
+      ) : (
+        <video
+          ref={videoRef}
+          className="card-media"
+          loop
+          muted
+          playsInline
+          poster={process.env.PUBLIC_URL + design.poster}
+        >
+          <source src={process.env.PUBLIC_URL + design.src} type="video/mp4" />
+        </video>
+      )}
+      <div className={`card-content ${imageLoaded ? 'visible' : ''}`}>
+        {design.content}
+       
+      </div>
+    </div>
+  )
+}
+
+const GallerySection = ({ section, onMediaClick }) => {
   const sectionRef = useRef(null)
   const isVisible = useIntersectionObserver(sectionRef)
 
@@ -175,7 +242,7 @@ const GallerySection = ({ section, onImageClick }) => {
           <DesignCard
             key={index}
             design={design}
-            onClick={onImageClick}
+            onClick={onMediaClick}
             index={index}
           />
         ))}
@@ -187,28 +254,38 @@ const GallerySection = ({ section, onImageClick }) => {
 const Gallery = () => {
   const { activeSection } = useGalleryNavigation()
   const [modalOpen, setModalOpen] = useState(false)
-  const [currentImageUrl, setCurrentImageUrl] = useState('')
+  const [currentMedia, setCurrentMedia] = useState({ url: '', type: 'image' })
 
-  const openModal = (imageUrl) => {
-    setCurrentImageUrl(imageUrl)
+  const openModal = (mediaUrl, mediaType) => {
+    setCurrentMedia({ url: mediaUrl, type: mediaType })
     setModalOpen(true)
   }
 
   const closeModal = () => {
     setModalOpen(false)
-    setCurrentImageUrl('')
+    setCurrentMedia({ url: '', type: 'image' })
   }
 
   return (
-    <div className="container" id="gallery">
+    <div className="gallery-container" id="gallery">
       {galleryData.map((section) => (
         <GallerySection
           key={section.id}
           section={section}
-          onImageClick={openModal}
+          onMediaClick={openModal}
           isActive={section.id === activeSection}
         />
       ))}
+      
+      {/* Add VideoGallery component */}
+      <VideoGallery  />
+      
+      <MediaModal
+        isOpen={modalOpen}
+        mediaUrl={currentMedia.url}
+        mediaType={currentMedia.type}
+        onClose={closeModal}
+      />
     </div>
   )
 }

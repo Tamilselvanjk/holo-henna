@@ -455,10 +455,10 @@ tr td:nth-child(5) {
 @keyframes bounce {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateX(0);
   }
   50% {
-    transform: translateY(-5px);
+    transform: translateX(-5px);
   }
 }
 

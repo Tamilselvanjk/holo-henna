@@ -36,7 +36,7 @@ const ShopHeader = ({ onCartClick, onSearch }) => {
 
   return (
     <div className={`header ${isSticky ? 'sticky' : ''}`}>
-      <div className="container">
+      <div className="shop-container">
         <div className="header-actions">
           <AddressSelector />
 

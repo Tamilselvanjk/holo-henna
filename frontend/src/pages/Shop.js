@@ -68,11 +68,13 @@ const Shop = () => {
       />
       <HeroBanner />
       <Categories onCategoryChange={setCurrentCategory} />
-      <ProductCards
-        category={currentCategory}
-        onAddToCart={handleAddToCart}
-        searchTerm={searchTerm}
-      />
+      <div id="products-container">
+        <ProductCards
+          category={currentCategory}
+          onAddToCart={handleAddToCart}
+          searchTerm={searchTerm}
+        />
+      </div>
       <Cart
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}

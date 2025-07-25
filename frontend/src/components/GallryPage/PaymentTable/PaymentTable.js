@@ -109,17 +109,8 @@ const PackageTable = () => {
   }, [])
 
   const handleBooking = () => {
-    // Add smooth scroll to top before navigating
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-
-    // Small delay for scroll animation
-    setTimeout(() => {
-      navigate('/shop')
-      toast.success('Choose your preferred package to continue booking', {
-        position: 'top-center',
-        autoClose: 3000,
-      })
-    }, 500)
+    // Navigate to home and scroll to booking section after navigation
+    navigate('/home', { state: { scrollTo: 'booking-section' } })
   }
 
   const renderCell = (pkg, property, value) => {
@@ -226,5 +217,7 @@ const PackageTable = () => {
     </div>
   )
 }
+
+
 
 export default PackageTable

@@ -91,7 +91,7 @@ const Cart = ({ isOpen, onClose }) => {
             <div className="cart-item-details">
               <h4>{item.name}</h4>
               <p className="cart-item-price">
-                ${(item.price * item.quantity).toFixed(2)}
+                ₹{(item.price * item.quantity).toFixed(2)}
               </p>
               <span className="stock-info">
                 {item.stock > 0 ? `${item.stock} in stock` : 'Out of stock'}
@@ -130,7 +130,7 @@ const Cart = ({ isOpen, onClose }) => {
     <div className="cart-footer">
       <div className="cart-total">
         <span>Total:</span>
-        <span>${getCartTotal()?.toFixed(2) || '0.00'}</span>
+        <span>₹{getCartTotal()?.toFixed(2) || '0.00'}</span>
       </div>
       <button
         className="checkout-btn"

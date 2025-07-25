@@ -9,7 +9,7 @@ const ShopSection = () => {
       title: 'Cones',
       description:
         'Traditional designs perfect for small gatherings and casual events.',
-      price: '$75',
+      price: '₹75',
       image: '/webimg/product4.webp',
       alt: 'Basic Mehndi Design',
     },
@@ -18,7 +18,7 @@ const ShopSection = () => {
       title: 'Bridal Mehndi Kit',
       description:
         'Elaborate designs ideal for bridal ceremonies and special occasions.',
-      price: '$150',
+      price: '₹150',
       image: '/webimg/product1.jpg',
       alt: 'Premium Mehndi Design',
     },
@@ -27,7 +27,7 @@ const ShopSection = () => {
       title: 'Henna Powder',
       description:
         'Customized patterns tailored to your preferences and style.',
-      price: '$200',
+      price: '₹200',
       image: '/webimg/product2.webp',
       alt: 'Custom Mehndi Design',
     },
@@ -36,7 +36,7 @@ const ShopSection = () => {
       title: 'Stecils',
       description:
         'Traditional henna patterns from various cultures and traditions.',
-      price: '$50',
+      price: '₹50',
       image: '/webimg/product3.png', 
       alt: 'Cultural or Traditional Designs',
     },
@@ -44,7 +44,7 @@ const ShopSection = () => {
       id: 5,
       title: 'Henna Cone Packaging',
       description: 'Premium quality henna cones for professional application.',
-      price: '$200',
+      price: '₹200',
       image: '/webimg/product5.jpg',
       alt: 'Henna Cone Packaging',
     },
@@ -53,7 +53,7 @@ const ShopSection = () => {
       title: 'Traditional Henna Stencils',
       description:
         'Reusable stencils for creating perfect traditional patterns.',
-      price: '$75',
+      price: '₹75',
       image: '/webimg/product6.jpg',
       alt: 'Traditional Henna Stencils',
     },
